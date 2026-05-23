@@ -215,8 +215,8 @@ body::after {
   animation: sflic 13s infinite 2s;
 }
 @keyframes sflic {
-  0%,80%,82%,100%{ opacity:.13; }
-  81%{ opacity:.03; }
+  0%,80%,82%,100%{ opacity:.28; }
+  81%{ opacity:.06; }
 }
 
 /* ════════════════════════════
@@ -467,6 +467,31 @@ input[type=range]:hover::-webkit-slider-thumb {
   text-shadow: 0 0 7px var(--red);
 }
 
+/* ════════════════════════════
+   GHOST QUOTES
+════════════════════════════ */
+.ghost {
+  position: fixed;
+  font-family: 'VT323', monospace;
+  color: #3a4f66;
+  pointer-events: none;
+  z-index: 11;
+  line-height: 1.5;
+  letter-spacing: 1px;
+}
+@keyframes gq1 { 0%,100%{opacity:.18} 50%{opacity:.07} }
+@keyframes gq2 { 0%,100%{opacity:.12} 40%{opacity:.04} }
+@keyframes gq3 { 0%,100%{opacity:.15} 60%{opacity:.05} }
+@keyframes gq4 { 0%,100%{opacity:.10} 30%{opacity:.02} }
+@keyframes gq5 { 0%,100%{opacity:.20} 70%{opacity:.08} }
+
+/* ── ambient pulse on bg ── */
+@keyframes bgpulse {
+  0%,100% { opacity:1; }
+  50% { opacity:.7; }
+}
+body::before { animation: bgpulse 18s ease-in-out infinite; }
+
 /* ── responsive ── */
 @media (max-width: 400px) {
   .buttons { width: 220px; }
@@ -480,6 +505,23 @@ input[type=range]:hover::-webkit-slider-thumb {
 <div class="gflash"></div>
 <div class="noise"></div>
 <div class="vignette"></div>
+
+<!-- atmospheric ghost quotes -->
+<div class="ghost" style="top:7%;left:3%;font-size:13px;animation:gq1 14s ease-in-out infinite 0s">
+  алиса.exe<br><span style="color:#2a3d52;font-size:11px">статус: повреждён</span>
+</div>
+<div class="ghost" style="top:9%;right:4%;font-size:12px;text-align:right;animation:gq2 19s ease-in-out infinite 3s">
+  соединение установлено<br><span style="font-size:11px;color:#2a3d52">nido://v.0.1.7</span>
+</div>
+<div class="ghost" style="top:42%;left:2%;font-size:11px;animation:gq3 22s ease-in-out infinite 7s">
+  загрузка воспоминаний...<br>файл #1 ████░░ 63%
+</div>
+<div class="ghost" style="bottom:30%;right:3%;font-size:14px;text-align:right;animation:gq4 25s ease-in-out infinite 11s">
+  ты не виноват
+</div>
+<div class="ghost" style="bottom:12%;left:3%;font-size:11px;animation:gq5 17s ease-in-out infinite 5s">
+  последнее сообщение:<br><span style="color:#2a3d52">«я просто устала»</span>
+</div>
 
 <div class="screen">
 
@@ -513,9 +555,10 @@ input[type=range]:hover::-webkit-slider-thumb {
       <rect x="8" y="0"  width="3" height="1" fill="#d4a800"/>
       <!-- head highlight -->
       <rect x="8" y="1"  width="2" height="1" fill="#f0c830" opacity=".5"/>
-      <!-- eye — black hollow with tiny reflection -->
+      <!-- eye — black hollow with glassy highlight -->
       <rect x="10" y="1" width="2" height="2" fill="#080a10"/>
-      <rect x="11" y="1" width="1" height="1" fill="#2a3050" opacity=".5"/>
+      <rect x="11" y="1" width="1" height="1" fill="#d8eeff" opacity=".85"/>
+      <rect x="10" y="2" width="1" height="1" fill="#4466aa" opacity=".3"/>
       <!-- beak -->
       <rect x="12" y="2" width="2" height="2" fill="#c07000"/>
       <rect x="12" y="3" width="2" height="1" fill="#904e00" opacity=".7"/>
