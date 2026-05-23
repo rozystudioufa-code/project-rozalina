@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIDO</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0a0e1a;
+  --mid:       #1a1f2e;
+  --blue:      #2a3f5f;
+  --red:       #ff2244;
+  --cyan:      #00e5ff;
+  --dim:       #8899bb;
+  --bright:    #e8e8f0;
+  --win-gray:  #c0c0c0;
+  --win-dark:  #808080;
+  --win-black: #404040;
+}
+
+/* ── base ── */
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--bright);
+  font-family: 'Press Start 2P', monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: crosshair;
+  position: relative;
+}
+
+/* ── CRT glow bg ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 50%, #0f2040 0%, #0a0e1a 75%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, #162a50 0%, transparent 80%);
+  z-index: 0;
+}
+
+/* ── scanlines ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent, transparent 3px,
+    rgba(0,0,0,.13) 3px, rgba(0,0,0,.13) 4px
+  );
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* ── moving scanline ── */
+.scanline {
+  position: fixed; left: 0; right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom,
+    transparent,
+    rgba(80,140,255,.04),
+    transparent);
+  animation: scanmove 9s linear infinite;
+  z-index: 101;
+  pointer-events: none;
+}
+@keyframes scanmove {
+  from { transform: translateY(-100vh); }
+  to   { transform: translateY(200vh); }
+}
+
+/* ── glitch flash ── */
+.gflash {
+  position: fixed; inset: 0;
+  z-index: 102;
+  pointer-events: none;
+  animation: flash 8s infinite 4s;
+}
+@keyframes flash {
+  0%,95%,100% { opacity:0; }
+  96%  { opacity:.06; background: var(--red);  }
+  97%  { opacity:0; }
+  98%  { opacity:.04; background: var(--cyan); }
+  99%  { opacity:0; }
+}
+
+/* ── noise ── */
+.noise {
+  position: fixed; inset: 0;
+  z-index: 99;
+  pointer-events: none;
+  opacity: .025;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ── vignette ── */
+.vignette {
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at center,
+    transparent 50%,
+    rgba(0,0,0,.7) 100%);
+  z-index: 98;
+  pointer-events: none;
+}
+
+/* ── screen ── */
+.screen {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 20px 80px;
+  gap: 0;
+  max-width: 500px;
+  width: 100%;
+}
+
+/* ════════════════════════════
+   TITLE
+════════════════════════════ */
+.title-wrap { position: relative; margin-bottom: 28px; }
+
+.title {
+  font-size: clamp(52px, 12vw, 88px);
+  letter-spacing: 12px;
+  color: var(--bright);
+  text-shadow:
+    0 0 18px rgba(100,160,255,.9),
+    0 0 40px rgba(100,160,255,.5),
+    0 0 90px rgba(100,160,255,.25);
+  animation: glitch 7s infinite, flicker 12s infinite 5s;
+  position: relative;
+  user-select: none;
+}
+
+/* glitch copies */
+.title::before,
+.title::after {
+  content: 'NIDO';
+  position: absolute; inset: 0;
+  opacity: 0;
+}
+.title::before {
+  color: var(--red);
+  animation: gbefore 7s infinite;
+}
+.title::after {
+  color: var(--cyan);
+  animation: gafter 7s infinite;
+}
+
+@keyframes glitch {
+  0%,88%,100%{ transform:none; filter:none; }
+  89%{ transform:translateX(-5px) skewX(-2deg); }
+  90%{ transform:translateX(4px) skewX(1deg);
+       clip-path:polygon(0 20%,100% 20%,100% 40%,0 40%); }
+  91%{ transform:translateX(-2px);
+       clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%); }
+  92%{ transform:none; clip-path:none; }
+}
+@keyframes gbefore {
+  0%,88%,100%{ opacity:0; }
+  89%{ opacity:.7; transform:translateX(4px);
+       clip-path:polygon(0 10%,100% 10%,100% 35%,0 35%); }
+  91%{ opacity:.5; transform:translateX(-3px);
+       clip-path:polygon(0 55%,100% 55%,100% 75%,0 75%); }
+  92%{ opacity:0; }
+}
+@keyframes gafter {
+  0%,88%,100%{ opacity:0; }
+  90%{ opacity:.5; transform:translateX(-4px);
+       clip-path:polygon(0 40%,100% 40%,100% 60%,0 60%); }
+  91%{ opacity:0; }
+}
+@keyframes flicker {
+  0%,18%,20%,24%,54%,56%,100%{ opacity:1; }
+  19%,23%,55%{ opacity:.35; }
+}
+
+/* ════════════════════════════
+   DUCK
+════════════════════════════ */
+.duck-wrap {
+  margin-bottom: 22px;
+  animation: dglitch 11s infinite 3s;
+}
+@keyframes dglitch {
+  0%,90%,100%{ transform:none; filter:none; }
+  91%{ transform:translateX(3px);
+       filter:drop-shadow(3px 0 var(--red)); }
+  92%{ transform:translateX(-3px);
+       filter:drop-shadow(-3px 0 var(--cyan)); }
+  93%{ transform:none; filter:none; }
+}
+
+/* ════════════════════════════
+   SUBTITLE
+════════════════════════════ */
+.subtitle {
+  font-family: 'VT323', monospace;
+  font-size: clamp(17px, 3.5vw, 24px);
+  color: var(--dim);
+  letter-spacing: 3px;
+  margin-bottom: 52px;
+  text-transform: lowercase;
+  animation: sflic 13s infinite 2s;
+}
+@keyframes sflic {
+  0%,80%,82%,100%{ opacity:.3; }
+  81%{ opacity:.08; }
+}
+
+/* ════════════════════════════
+   BUTTONS
+════════════════════════════ */
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 260px;
+}
+
+.btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  padding: 11px 16px;
+  background: var(--win-gray);
+  color: #000;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 1px;
+  position: relative;
+  transition: background .08s, color .08s;
+  box-shadow:
+    inset -2px -2px 0 var(--win-black),
+    inset -1px -1px 0 var(--win-dark),
+    inset  2px  2px 0 #fff,
+    inset  1px  1px 0 #ddd;
+}
+
+.btn-start {
+  outline: 2px solid var(--bright);
+  outline-offset: -5px;
+}
+
+.btn:hover:not(:disabled) {
+  background: #12192e;
+  color: var(--red);
+  box-shadow:
+    inset -2px -2px 0 var(--red),
+    inset -1px -1px 0 #880011,
+    inset  2px  2px 0 #ff6677,
+    inset  1px  1px 0 #cc1133;
+  text-shadow: 0 0 8px var(--red);
+}
+.btn:active:not(:disabled) {
+  box-shadow:
+    inset -2px -2px 0 #fff,
+    inset -1px -1px 0 #ddd,
+    inset  2px  2px 0 var(--win-black),
+    inset  1px  1px 0 var(--win-dark);
+}
+.btn:disabled {
+  color: var(--win-dark);
+  cursor: not-allowed;
+}
+
+/* ════════════════════════════
+   WARNING
+════════════════════════════ */
+.warning {
+  position: fixed;
+  bottom: 18px;
+  left: 0; right: 0;
+  text-align: center;
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+  color: #445566;
+  letter-spacing: 1px;
+  z-index: 10;
+}
+
+/* ════════════════════════════
+   MODAL
+════════════════════════════ */
+.overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.65);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+}
+.overlay.open { display: flex; }
+
+.modal {
+  background: var(--win-gray);
+  width: 320px;
+  max-width: 92vw;
+  box-shadow:
+    inset -2px -2px 0 var(--win-black),
+    inset  2px  2px 0 #fff,
+    6px 6px 0 #000;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+}
+
+.modal-bar {
+  background: linear-gradient(90deg, #000080, #1084d0);
+  padding: 5px 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  font-size: 9px;
+  letter-spacing: 1px;
+  user-select: none;
+}
+.modal-x {
+  background: var(--win-gray);
+  border: none;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  width: 18px; height: 15px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow:
+    inset -1px -1px 0 var(--win-black),
+    inset  1px  1px 0 #fff;
+  color: #000;
+}
+.modal-x:hover { background: var(--red); color: #fff; }
+
+.modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sl-group { display: flex; flex-direction: column; gap: 9px; }
+.sl-label { color: #000; font-size: 8px; letter-spacing: .5px; }
+.sl-row { display: flex; align-items: center; gap: 10px; }
+
+input[type=range] {
+  flex: 1; height: 4px;
+  appearance: none;
+  background: var(--win-dark);
+  box-shadow: inset 1px 1px 0 #333, inset -1px -1px 0 #ddd;
+  outline: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px; height: 20px;
+  background: var(--win-gray);
+  box-shadow:
+    inset -1px -1px 0 var(--win-black),
+    inset  1px  1px 0 #fff;
+  cursor: pointer;
+}
+.sl-val { font-size: 8px; color: #000; min-width: 28px; text-align: right; }
+
+.modal-foot {
+  padding: 0 20px 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+.btn-ok {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  padding: 8px 22px;
+  background: var(--win-gray);
+  color: #000;
+  border: none;
+  cursor: pointer;
+  outline: 2px dotted #000;
+  outline-offset: -4px;
+  box-shadow:
+    inset -2px -2px 0 var(--win-black),
+    inset  2px  2px 0 #fff;
+}
+.btn-ok:hover { background: #d8d8e8; }
+.btn-ok:active {
+  box-shadow:
+    inset  2px  2px 0 var(--win-black),
+    inset -2px -2px 0 #fff;
+}
+
+/* ── responsive ── */
+@media (max-width: 400px) {
+  .buttons { width: 220px; }
+  .btn { font-size: 8px; padding: 10px 14px; }
+}
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+<div class="gflash"></div>
+<div class="noise"></div>
+<div class="vignette"></div>
+
+<div class="screen">
+
+  <!-- TITLE -->
+  <div class="title-wrap">
+    <div class="title">NIDO</div>
+  </div>
+
+  <!-- DUCK — pixel art SVG -->
+  <div class="duck-wrap">
+    <svg width="96" height="72" viewBox="0 0 12 9"
+         xmlns="http://www.w3.org/2000/svg"
+         style="image-rendering:pixelated">
+      <!-- body -->
+      <rect x="2" y="4" width="7" height="4" fill="#b8c8d8"/>
+      <rect x="1" y="5" width="1" height="2" fill="#b8c8d8"/>
+      <!-- head -->
+      <rect x="7" y="1" width="4" height="3" fill="#b8c8d8"/>
+      <rect x="8" y="0" width="2" height="1" fill="#b8c8d8"/>
+      <!-- eye — hollow, eerie -->
+      <rect x="10" y="1" width="1" height="1" fill="#0a0e1a"/>
+      <rect x="10" y="1" width="1" height="1" fill="#ff2244" opacity=".7"/>
+      <!-- beak -->
+      <rect x="11" y="2" width="1" height="1" fill="#c49020"/>
+      <!-- wing -->
+      <rect x="3" y="5" width="5" height="1" fill="#9ab0c0"/>
+      <!-- tail feather -->
+      <rect x="2" y="4" width="1" height="2" fill="#9ab0c0"/>
+      <!-- feet -->
+      <rect x="4"  y="8" width="2" height="1" fill="#c49020"/>
+      <rect x="7"  y="8" width="2" height="1" fill="#c49020"/>
+      <!-- crack — unsettling detail -->
+      <rect x="5" y="5" width="1" height="2" fill="#ff2244" opacity=".2"/>
+      <rect x="5" y="6" width="2" height="1" fill="#ff2244" opacity=".15"/>
+    </svg>
+  </div>
+
+  <!-- SUBTITLE -->
+  <div class="subtitle">ты думал, что спасаешь её</div>
+
+  <!-- BUTTONS -->
+  <div class="buttons">
+    <button class="btn btn-start" onclick="onStart()">НАЧАТЬ</button>
+    <button class="btn" disabled title="Нет сохранений">ПРОДОЛЖИТЬ</button>
+    <button class="btn" onclick="openSettings()">НАСТРОЙКИ</button>
+  </div>
+
+</div>
+
+<!-- warning -->
+<div class="warning">⚠ Игра содержит темы суицида и самоповреждения</div>
+
+<!-- SETTINGS MODAL -->
+<div class="overlay" id="modal" onclick="overlayClick(event)">
+  <div class="modal">
+    <div class="modal-bar">
+      <span>⚙ НАСТРОЙКИ</span>
+      <button class="modal-x" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="sl-group">
+        <div class="sl-label">МУЗЫКА</div>
+        <div class="sl-row">
+          <input type="range" min="0" max="100" value="70"
+                 oninput="upd(this,'mv')">
+          <span class="sl-val" id="mv">70</span>
+        </div>
+      </div>
+      <div class="sl-group">
+        <div class="sl-label">ЗВУКИ</div>
+        <div class="sl-row">
+          <input type="range" min="0" max="100" value="80"
+                 oninput="upd(this,'sv')">
+          <span class="sl-val" id="sv">80</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ok" onclick="closeSettings()">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function onStart() {
+    // будущий переход к игре — пока запускаем глитч
+    const t = document.querySelector('.title');
+    t.style.animation = 'glitch .08s infinite';
+    setTimeout(() => { t.style.animation = ''; }, 600);
+  }
+
+  function openSettings()  { document.getElementById('modal').classList.add('open'); }
+  function closeSettings() { document.getElementById('modal').classList.remove('open'); }
+  function overlayClick(e) { if (e.target.id === 'modal') closeSettings(); }
+  function upd(el, id)     { document.getElementById(id).textContent = el.value; }
+
+  // рандомизируем задержку глитч-вспышки
+  setInterval(() => {
+    document.querySelector('.gflash').style.animationDelay =
+      (Math.random() * 12).toFixed(1) + 's';
+  }, 18000);
+</script>
+</body>
+</html>
