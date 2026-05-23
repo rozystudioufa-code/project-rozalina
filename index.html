@@ -468,6 +468,128 @@ input[type=range]:hover::-webkit-slider-thumb {
 }
 
 /* ════════════════════════════
+   WARNING SCREEN
+════════════════════════════ */
+.warn-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: #04060f;
+  z-index: 600;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  overflow: hidden;
+}
+.warn-overlay.show { display: flex; animation: wfadein .7s ease forwards; }
+@keyframes wfadein  { from{opacity:0} to{opacity:1} }
+@keyframes wfadeout { from{opacity:1} to{opacity:0} }
+
+/* CRT поверх предупреждения */
+.warn-overlay::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 3px,
+    rgba(0,0,0,.12) 3px, rgba(0,0,0,.12) 4px);
+  pointer-events: none; z-index: 1;
+}
+
+.warn-inner {
+  position: relative; z-index: 2;
+  max-width: 460px; width: 90%;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.warn-tag {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(8px, 2vw, 11px);
+  color: var(--red);
+  letter-spacing: 4px;
+  text-shadow: 0 0 14px rgba(255,34,68,.55);
+  margin-bottom: 36px;
+  animation: flicker 8s infinite;
+}
+
+.warn-duck-small {
+  margin-bottom: 20px;
+  opacity: .7;
+  animation: dglitch 11s infinite 3s;
+}
+
+.warn-lines {
+  font-family: 'VT323', monospace;
+  font-size: clamp(19px, 4.5vw, 23px);
+  color: #5a6e88;
+  line-height: 1.85;
+  letter-spacing: 1px;
+  margin-bottom: 32px;
+  min-height: 180px;
+}
+.wl {
+  display: block;
+  opacity: 0;
+  animation: wlfade .5s ease forwards;
+}
+.wl-bright { color: #8899bb; }
+.wl-accent { color: #99aacc; }
+@keyframes wlfade { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:none} }
+
+.warn-sep {
+  width: 60%; height: 1px;
+  background: linear-gradient(90deg, transparent, #1e3050, transparent);
+  margin: 8px auto 28px;
+  opacity: 0;
+  transition: opacity .8s;
+}
+
+.warn-crisis {
+  font-family: 'VT323', monospace;
+  font-size: clamp(17px, 4vw, 21px);
+  color: #4a5e78;
+  line-height: 1.9;
+  margin-bottom: 36px;
+  opacity: 0; transition: opacity 1s;
+}
+.crisis-num {
+  display: block;
+  font-size: clamp(19px, 4.5vw, 24px);
+  color: var(--cyan);
+  text-shadow: 0 0 10px rgba(0,229,255,.4);
+  letter-spacing: 2px;
+  margin: 4px 0;
+}
+.crisis-note { color: #334455; font-size: clamp(13px, 3vw, 16px); }
+
+.warn-btns {
+  display: flex; gap: 12px;
+  opacity: 0; transition: opacity .8s;
+}
+.warn-ok {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px; padding: 10px 20px;
+  background: #060b16; color: var(--cyan);
+  border: 1px solid var(--cyan);
+  cursor: pointer; letter-spacing: 1px;
+  box-shadow: 0 0 14px rgba(0,229,255,.12);
+  transition: all .1s;
+}
+.warn-ok:hover {
+  background: #030710; color: #fff;
+  box-shadow: 0 0 22px rgba(0,229,255,.3);
+}
+.warn-no {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px; padding: 10px 20px;
+  background: #060b16; color: #445566;
+  border: 1px solid #2a3a55;
+  cursor: pointer; letter-spacing: 1px;
+  transition: all .1s;
+}
+.warn-no:hover { color: var(--red); border-color: var(--red); }
+
+/* ════════════════════════════
    GHOST QUOTES
 ════════════════════════════ */
 .ghost {
@@ -648,6 +770,56 @@ body::before { animation: bgpulse 18s ease-in-out infinite; }
 
 <!-- warning -->
 <div class="warning">⚠ Игра содержит темы суицида и самоповреждения</div>
+
+<!-- WARNING SCREEN -->
+<div class="warn-overlay" id="warnScreen">
+  <div class="warn-inner">
+
+    <div class="warn-tag">⚠ &nbsp; ПРЕДУПРЕЖДЕНИЕ &nbsp; ⚠</div>
+
+    <!-- маленький утёнок -->
+    <div class="warn-duck-small">
+      <svg width="56" height="52" viewBox="0 0 14 13"
+           xmlns="http://www.w3.org/2000/svg"
+           style="image-rendering:pixelated">
+        <rect x="2" y="5"  width="8" height="5" fill="#d4a800"/>
+        <rect x="1" y="6"  width="1" height="3" fill="#d4a800"/>
+        <rect x="10" y="6" width="1" height="2" fill="#d4a800"/>
+        <rect x="3" y="5"  width="4" height="1" fill="#f0c830" opacity=".5"/>
+        <rect x="2" y="9"  width="8" height="1" fill="#a07800" opacity=".6"/>
+        <rect x="2" y="5"  width="1" height="3" fill="#b88a00"/>
+        <rect x="8" y="3"  width="2" height="3" fill="#c9a000"/>
+        <rect x="7" y="1"  width="5" height="4" fill="#d4a800"/>
+        <rect x="8" y="0"  width="3" height="1" fill="#d4a800"/>
+        <rect x="8" y="1"  width="2" height="1" fill="#f0c830" opacity=".4"/>
+        <rect x="10" y="1" width="2" height="2" fill="#080a10"/>
+        <rect x="11" y="1" width="1" height="1" fill="#d8eeff" opacity=".38"/>
+        <rect x="12" y="2" width="2" height="2" fill="#c07000"/>
+        <rect x="3" y="6"  width="6" height="1" fill="#b88a00" opacity=".5"/>
+        <rect x="3" y="10" width="1" height="1" fill="#a07000"/>
+        <rect x="3" y="11" width="4" height="1" fill="#c07000"/>
+        <rect x="7" y="10" width="1" height="1" fill="#a07000"/>
+        <rect x="7" y="11" width="4" height="1" fill="#c07000"/>
+      </svg>
+    </div>
+
+    <div class="warn-lines" id="warnLines"></div>
+
+    <div class="warn-sep" id="warnSep"></div>
+
+    <div class="warn-crisis" id="warnCrisis">
+      если тебе сейчас тяжело — ты не один<br>
+      <span class="crisis-num">8-800-2000-122</span>
+      <span class="crisis-note">бесплатно · круглосуточно · анонимно</span>
+    </div>
+
+    <div class="warn-btns" id="warnBtns">
+      <button class="warn-ok" onclick="closeWarning()">Я ПОНИМАЮ</button>
+      <button class="warn-no" onclick="location.reload()">НАЗАД</button>
+    </div>
+
+  </div>
+</div>
 
 <!-- system dialog -->
 <div class="sys-dialog">
@@ -898,11 +1070,66 @@ document.addEventListener('click', () => {
   if (ctx && ctx.state !== 'running') ctx.resume();
 });
 
+const WARN_LINES = [
+  { t: 'перед тем как войти',          cls: 'wl-bright' },
+  { t: '' },
+  { t: 'эта история говорит о вещах,', cls: '' },
+  { t: 'которые бывает тяжело слышать:',cls: '' },
+  { t: '' },
+  { t: '· суицид и суицидальные мысли', cls: 'wl-accent' },
+  { t: '· самоповреждение',             cls: 'wl-accent' },
+  { t: '· депрессия · горе · вина',     cls: 'wl-accent' },
+  { t: '' },
+  { t: 'это — часть истории.',          cls: '' },
+  { t: 'не продолжай, если сейчас тяжело.', cls: 'wl-bright' },
+];
+
+function showWarning() {
+  const box = document.getElementById('warnLines');
+  box.innerHTML = '';
+  let delay = 300;
+  WARN_LINES.forEach(line => {
+    const d = line.t ? 550 : 220;
+    setTimeout(() => {
+      const el = document.createElement('span');
+      el.className = 'wl' + (line.cls ? ' ' + line.cls : '');
+      el.textContent = line.t || ' ';
+      box.appendChild(el);
+    }, delay);
+    delay += d;
+  });
+  // кризис + кнопки после всего текста
+  setTimeout(() => {
+    document.getElementById('warnSep').style.opacity = '1';
+    setTimeout(() => {
+      document.getElementById('warnCrisis').style.opacity = '1';
+      setTimeout(() => {
+        document.getElementById('warnBtns').style.opacity = '1';
+      }, 700);
+    }, 400);
+  }, delay + 200);
+}
+
 function onStart() {
   initAudio();
+  // сбрасываем состояние
+  document.getElementById('warnCrisis').style.opacity = '0';
+  document.getElementById('warnBtns').style.opacity   = '0';
+  document.getElementById('warnSep').style.opacity    = '0';
+  const ws = document.getElementById('warnScreen');
+  ws.style.animation = '';
+  ws.classList.add('show');
+  setTimeout(showWarning, 400);
+}
+
+function closeWarning() {
+  const ws = document.getElementById('warnScreen');
+  ws.style.animation = 'wfadeout .5s ease forwards';
+  setTimeout(() => ws.classList.remove('show'), 500);
+  // глитч на заголовке при переходе
   const t = document.querySelector('.title');
   t.style.animation = 'glitch .08s infinite';
-  setTimeout(() => { t.style.animation = ''; }, 600);
+  setTimeout(() => { t.style.animation = ''; }, 700);
 }
 
 function openSettings()  { document.getElementById('modal').classList.add('open'); }
