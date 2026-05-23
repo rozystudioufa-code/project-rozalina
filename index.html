@@ -190,7 +190,7 @@ body::after {
    DUCK
 ════════════════════════════ */
 .duck-wrap {
-  margin-bottom: 22px;
+  margin-bottom: 14px;
   animation: dglitch 11s infinite 3s;
 }
 @keyframes dglitch {
@@ -210,7 +210,7 @@ body::after {
   font-size: clamp(17px, 3.5vw, 24px);
   color: #445566;
   letter-spacing: 3px;
-  margin-bottom: 52px;
+  margin-bottom: 32px;
   text-transform: lowercase;
   animation: sflic 13s infinite 2s;
 }
@@ -514,6 +514,7 @@ input[type=range]:hover::-webkit-slider-thumb {
   font-family: 'Press Start 2P', monospace;
   font-size: 7px;
   z-index: 12;
+  pointer-events: none;
   animation: dlgshow 60s ease-in-out infinite 8s;
   opacity: 0;
 }
@@ -589,7 +590,7 @@ body::before { animation: bgpulse 18s ease-in-out infinite; }
 
   <!-- DUCK — pixel art SVG, worn yellow rubber duck -->
   <div class="duck-wrap">
-    <svg width="210" height="195" viewBox="0 0 14 13"
+    <svg width="154" height="143" viewBox="0 0 14 13"
          xmlns="http://www.w3.org/2000/svg"
          style="image-rendering:pixelated">
       <!-- body -->
