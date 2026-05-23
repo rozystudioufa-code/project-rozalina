@@ -639,23 +639,144 @@ body::before { animation: bgpulse 18s ease-in-out infinite; }
 </div>
 
 <script>
-  function onStart() {
-    // будущий переход к игре — пока запускаем глитч
-    const t = document.querySelector('.title');
-    t.style.animation = 'glitch .08s infinite';
-    setTimeout(() => { t.style.animation = ''; }, 600);
+// ═══════════════════════════════════════
+//  AUDIO ENGINE — dark ambient procedural
+// ═══════════════════════════════════════
+const AC = window.AudioContext || window.webkitAudioContext;
+let ctx = null, masterGain = null, audioReady = false;
+
+function makeReverb() {
+  const len = Math.floor(ctx.sampleRate * 8);
+  const buf = ctx.createBuffer(2, len, ctx.sampleRate);
+  for (let c = 0; c < 2; c++) {
+    const d = buf.getChannelData(c);
+    for (let i = 0; i < len; i++)
+      d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.4);
   }
+  const conv = ctx.createConvolver();
+  conv.buffer = buf;
+  return conv;
+}
 
-  function openSettings()  { document.getElementById('modal').classList.add('open'); }
-  function closeSettings() { document.getElementById('modal').classList.remove('open'); }
-  function overlayClick(e) { if (e.target.id === 'modal') closeSettings(); }
-  function upd(el, id)     { document.getElementById(id).textContent = el.value; }
+function initAudio() {
+  if (audioReady) return;
+  audioReady = true;
+  ctx = new AC();
 
-  // рандомизируем задержку глитч-вспышки
-  setInterval(() => {
-    document.querySelector('.gflash').style.animationDelay =
-      (Math.random() * 12).toFixed(1) + 's';
-  }, 18000);
+  // master → compressor → out
+  masterGain = ctx.createGain();
+  masterGain.gain.value = 0;
+  const comp = ctx.createDynamicsCompressor();
+  comp.threshold.value = -8; comp.ratio.value = 4;
+  masterGain.connect(comp);
+  comp.connect(ctx.destination);
+
+  // slow fade-in (6 sec)
+  const vol = (+(document.getElementById('mv')?.value ?? 70)) / 100 * 0.55;
+  masterGain.gain.linearRampToValueAtTime(vol, ctx.currentTime + 6);
+
+  // reverb bus
+  const rev = makeReverb();
+  const revG = ctx.createGain(); revG.gain.value = 0.7;
+  rev.connect(revG); revG.connect(masterGain);
+  // dry bus (barely audible without verb)
+  const dry = ctx.createGain(); dry.gain.value = 0.15;
+  dry.connect(masterGain);
+  function wire(n) { n.connect(dry); n.connect(rev); }
+
+  const R = 41.2; // E1 — низкий корень
+
+  // — 3 суб-дрона со сдвигом (биения)
+  [[R, 0.9], [R * 1.009, 0.48], [R * 0.993, 0.42]].forEach(([f, a]) => {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine'; o.frequency.value = f; g.gain.value = a;
+    o.connect(g); wire(g); o.start();
+  });
+
+  // — квинта чуть ниже строя (тревога)
+  const o5 = ctx.createOscillator(), g5 = ctx.createGain();
+  o5.type = 'sine'; o5.frequency.value = R * 1.494;
+  g5.gain.value = 0.2; o5.connect(g5); wire(g5); o5.start();
+
+  // — октава с медленным тремоло
+  const oOct = ctx.createOscillator(), gOct = ctx.createGain();
+  oOct.type = 'triangle'; oOct.frequency.value = R * 2; gOct.gain.value = 0.11;
+  const tLFO = ctx.createOscillator(), tG = ctx.createGain();
+  tLFO.frequency.value = 0.08; tG.gain.value = 0.07;
+  tLFO.connect(tG); tG.connect(gOct.gain); tLFO.start();
+  oOct.connect(gOct); wire(gOct); oOct.start();
+
+  // — фильтрованный шум (lowpass с медленным свипом)
+  const nbuf = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate);
+  const nd = nbuf.getChannelData(0);
+  for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+  const ns = ctx.createBufferSource(); ns.buffer = nbuf; ns.loop = true;
+  const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 165;
+  const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 52;
+  const nG = ctx.createGain(); nG.gain.value = 0.17;
+  const swLFO = ctx.createOscillator(), swG = ctx.createGain();
+  swLFO.frequency.value = 0.016; swG.gain.value = 95;
+  swLFO.connect(swG); swG.connect(lp.frequency); swLFO.start();
+  ns.connect(hp); hp.connect(lp); lp.connect(nG); wire(nG); ns.start();
+
+  // — редкие высокие шиммеры (гармоники пропадают и появляются)
+  function shimmer() {
+    if (!ctx) return;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.value = R * (5 + Math.random() * 7);
+    g.gain.value = 0; o.connect(g); g.connect(rev);
+    const now = ctx.currentTime, dur = 3 + Math.random() * 8;
+    g.gain.linearRampToValueAtTime(0.03 + Math.random() * 0.03, now + 2.5);
+    g.gain.linearRampToValueAtTime(0, now + dur);
+    o.start(now); o.stop(now + dur + 0.5);
+    setTimeout(shimmer, (9 + Math.random() * 24) * 1000);
+  }
+  shimmer();
+
+  // — пульсы суббаса (глубокий удар раз в ~20сек)
+  function rumble() {
+    if (!ctx) return;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine'; o.frequency.value = 16 + Math.random() * 22;
+    g.gain.value = 0; o.connect(g); g.connect(masterGain);
+    const now = ctx.currentTime, dur = 1.8 + Math.random() * 2.5;
+    g.gain.linearRampToValueAtTime(0.2, now + 0.9);
+    g.gain.linearRampToValueAtTime(0, now + dur);
+    o.start(now); o.stop(now + dur + 0.5);
+    setTimeout(rumble, (16 + Math.random() * 32) * 1000);
+  }
+  setTimeout(rumble, 11000);
+}
+
+function setMusicVol(v) {
+  if (masterGain && ctx)
+    masterGain.gain.setTargetAtTime(v / 100 * 0.55, ctx.currentTime, 0.4);
+}
+// ═══════════════════════════════════════
+
+// первый клик запускает аудио
+document.addEventListener('click', initAudio, { once: true });
+
+function onStart() {
+  initAudio();
+  const t = document.querySelector('.title');
+  t.style.animation = 'glitch .08s infinite';
+  setTimeout(() => { t.style.animation = ''; }, 600);
+}
+
+function openSettings()  { document.getElementById('modal').classList.add('open'); }
+function closeSettings() { document.getElementById('modal').classList.remove('open'); }
+function overlayClick(e) { if (e.target.id === 'modal') closeSettings(); }
+function upd(el, id) {
+  document.getElementById(id).textContent = el.value;
+  if (id === 'mv') setMusicVol(+el.value);
+}
+
+setInterval(() => {
+  document.querySelector('.gflash').style.animationDelay =
+    (Math.random() * 12).toFixed(1) + 's';
+}, 18000);
 </script>
 </body>
 </html>
