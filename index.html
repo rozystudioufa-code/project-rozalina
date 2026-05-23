@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NIDO</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Cormorant+SC:wght@300;400;500&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -130,13 +130,15 @@ body::after {
 .title-wrap { position: relative; margin-bottom: 28px; }
 
 .title {
-  font-size: clamp(52px, 12vw, 88px);
-  letter-spacing: 12px;
+  font-family: 'Cormorant SC', serif;
+  font-weight: 300;
+  font-size: clamp(72px, 16vw, 116px);
+  letter-spacing: 22px;
   color: var(--bright);
   text-shadow:
-    0 0 18px rgba(100,160,255,.9),
-    0 0 40px rgba(100,160,255,.5),
-    0 0 90px rgba(100,160,255,.25);
+    0 0 12px rgba(200,220,255,.6),
+    0 0 35px rgba(100,160,255,.35),
+    0 0 80px rgba(100,160,255,.18);
   animation: glitch 7s infinite, flicker 12s infinite 5s;
   position: relative;
   user-select: none;
@@ -206,12 +208,12 @@ body::after {
    SUBTITLE
 ════════════════════════════ */
 .subtitle {
-  font-family: 'VT323', monospace;
-  font-size: clamp(17px, 3.5vw, 24px);
+  font-family: 'Caveat', cursive;
+  font-weight: 400;
+  font-size: clamp(22px, 4.5vw, 30px);
   color: var(--dim);
-  letter-spacing: 3px;
+  letter-spacing: 1px;
   margin-bottom: 52px;
-  text-transform: lowercase;
   animation: sflic 13s infinite 2s;
 }
 @keyframes sflic {
