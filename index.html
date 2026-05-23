@@ -1132,11 +1132,9 @@ function onStart() {
 function closeWarning() {
   const ws = document.getElementById('warnScreen');
   ws.style.animation = 'wfadeout .5s ease forwards';
-  setTimeout(() => ws.classList.remove('show'), 500);
-  // глитч на заголовке при переходе
   const t = document.querySelector('.title');
   t.style.animation = 'glitch .08s infinite';
-  setTimeout(() => { t.style.animation = ''; }, 700);
+  setTimeout(() => { window.location.href = 'prologue.html'; }, 600);
 }
 
 function openSettings()  { document.getElementById('modal').classList.add('open'); }
