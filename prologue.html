@@ -9,92 +9,50 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root { --red:#ff2244; --cyan:#00e5ff; }
 html, body { height: 100%; overflow: hidden; background: #000; }
-body { color: #d0d8ea; font-family: 'VT323', monospace; cursor: pointer; user-select: none; }
+body { color: #ccd4e4; font-family: 'VT323', monospace; cursor: pointer; user-select: none; }
 
-/* ── CRT CHROME ── */
+/* ── CRT ── */
 .scanlines {
   position: fixed; inset: 0; z-index: 90; pointer-events: none;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.09) 2px, rgba(0,0,0,.09) 3px);
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.08) 2px, rgba(0,0,0,.08) 3px);
 }
 .vignette {
   position: fixed; inset: 0; z-index: 89; pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 38%, rgba(0,0,0,.96) 100%);
+  background: radial-gradient(ellipse at center, transparent 36%, rgba(0,0,0,.94) 100%);
 }
 .gflash { position: fixed; inset: 0; z-index: 88; pointer-events: none; opacity: 0; }
 .gflash.on { animation: gfl .28s ease forwards; }
-@keyframes gfl { 0%{opacity:0} 15%{opacity:.22;background:#000} 50%{opacity:.1;background:var(--red)} 100%{opacity:0} }
+@keyframes gfl { 0%{opacity:0} 15%{opacity:.2;background:#000} 50%{opacity:.08;background:var(--red)} 100%{opacity:0} }
 
-/* ── PROGRESS / NAV ── */
-.prog {
-  position: fixed; top: 0; left: 0; height: 2px;
-  background: var(--cyan); box-shadow: 0 0 4px rgba(0,229,255,.4);
-  z-index: 95; opacity: .28; transition: width .3s;
-}
-.loc-tag {
-  position: fixed; top: 16px; left: 20px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 6px; color: #1c2c40; letter-spacing: 2px; z-index: 30; pointer-events: none;
-}
-.back-btn {
-  position: fixed; top: 14px; right: 18px;
-  font-family: 'Press Start 2P', monospace; font-size: 6px;
-  color: #182636; letter-spacing: 1px;
-  background: none; border: none; cursor: pointer; z-index: 95; transition: color .2s;
-}
+/* ── CHROME ── */
+.prog { position: fixed; top: 0; left: 0; height: 2px; background: var(--cyan); box-shadow: 0 0 4px rgba(0,229,255,.4); z-index: 95; opacity: .28; transition: width .3s; }
+.loc-tag { position: fixed; top: 16px; left: 20px; font-family: 'Press Start 2P', monospace; font-size: 6px; color: #1c2c40; letter-spacing: 2px; z-index: 30; pointer-events: none; }
+.back-btn { position: fixed; top: 14px; right: 18px; font-family: 'Press Start 2P', monospace; font-size: 6px; color: #182636; background: none; border: none; cursor: pointer; z-index: 95; transition: color .2s; }
 .back-btn:hover { color: #3a5068; }
 
-/* ── CSS BACKGROUND (atmosphere layer) ── */
-.bg { position: fixed; inset: 0; z-index: 1; transition: background .3s; }
+/* ── BACKGROUNDS ── */
+.bg { position: fixed; inset: 0; z-index: 1; }
 .bg-black { background: #000; }
-.bg-room  { background: linear-gradient(180deg, #06080f 0%, #080a14 55%, #050609 100%); }
-.bg-duck  { background: linear-gradient(160deg, #030510 0%, #040818 100%); }
-.bg-desk  { background: linear-gradient(180deg, #020408 0%, #030510 100%); }
+.bg-room  { background: linear-gradient(180deg, #0e1120 0%, #111420 55%, #0c0e18 100%); }
+.bg-duck  { background: linear-gradient(160deg, #040618 0%, #06091c 100%); }
+.bg-flash { background: linear-gradient(180deg, #d8cca8 0%, #e0d4b4 50%, #c8be9a 100%); }
+.bg-desk  { background: linear-gradient(180deg, #030509 0%, #04060c 100%); }
 .bg-load  { background: #000; }
-.bg-nido  {
-  background: #02040a;
-  background-image:
-    linear-gradient(rgba(0,80,160,.028) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,80,160,.028) 1px, transparent 1px);
-  background-size: 28px 28px;
-}
-.bg-files {
-  background: #02040a;
-  background-image:
-    linear-gradient(rgba(0,60,120,.022) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,60,120,.022) 1px, transparent 1px);
-  background-size: 28px 28px;
-}
+.bg-nido  { background: #02040a; background-image: linear-gradient(rgba(0,80,160,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,80,160,.025) 1px, transparent 1px); background-size: 28px 28px; }
+.bg-files { background: #02040a; background-image: linear-gradient(rgba(0,60,120,.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,60,120,.02) 1px, transparent 1px); background-size: 28px 28px; }
 
-/* ── SVG SCENE LAYERS ── */
-.scene-svg {
-  position: fixed; inset: 0; z-index: 2;
-  width: 100vw; height: 100vh;
-  pointer-events: none; display: none;
-}
+/* ── SCENE SVG LAYERS ── */
+.scene-svg { position: fixed; inset: 0; z-index: 2; width: 100vw; height: 100vh; pointer-events: none; display: none; }
 .scene-svg.show { display: block; }
 
-/* ── UPPER AREA ── */
-.upper {
-  position: fixed; top: 0; left: 0; right: 0; height: 56%;
-  z-index: 5; display: flex; align-items: center; justify-content: center;
-  pointer-events: none;
-}
+/* ── UPPER ── */
+.upper { position: fixed; top: 0; left: 0; right: 0; height: 56%; z-index: 5; display: flex; align-items: center; justify-content: center; pointer-events: none; }
 .duck-wrap { opacity: 0; transition: opacity .7s ease; filter: drop-shadow(0 0 22px rgba(180,130,0,.22)); }
 .duck-wrap.show { opacity: 1; }
-
-.nido-frame {
-  opacity: 0; transition: opacity .6s ease;
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  padding: 12px 20px; background: #020508; border: 1px solid #0b1828;
-  box-shadow: 0 0 40px rgba(0,40,100,.10);
-}
+.nido-frame { opacity: 0; transition: opacity .6s ease; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 12px 20px; background: #020508; border: 1px solid #0b1828; }
 .nido-frame.show { opacity: 1; }
-.nido-frame-hdr {
-  font-family: 'Press Start 2P', monospace; font-size: 5px; color: #1a2a3e; letter-spacing: 3px;
-  padding-bottom: 10px; border-bottom: 1px solid #0a1428; width: 100%; text-align: center;
-}
+.nido-frame-hdr { font-family: 'Press Start 2P', monospace; font-size: 5px; color: #1a2a3e; letter-spacing: 3px; padding-bottom: 10px; border-bottom: 1px solid #0a1428; width: 100%; text-align: center; }
 .nido-status { font-size: 13px; color: #1c2e44; letter-spacing: 1px; }
-
 .load-ui { display: none; flex-direction: column; align-items: center; gap: 14px; }
 .load-ui.show { display: flex; }
 .load-label { font-size: 14px; color: #1a2a3e; letter-spacing: 3px; }
@@ -102,54 +60,28 @@ body { color: #d0d8ea; font-family: 'VT323', monospace; cursor: pointer; user-se
 .load-bar { height: 100%; width: 0; background: var(--cyan); box-shadow: 0 0 6px rgba(0,229,255,.5); transition: width 2.5s linear; }
 
 /* ── TEXTBOX ── */
-.textbox {
-  position: fixed; bottom: 0; left: 0; right: 0; height: 41%;
-  background: linear-gradient(180deg, rgba(2,4,10,0) 0%, rgba(2,4,10,.93) 13%, rgba(2,4,10,.98) 100%);
-  border-top: 2px solid #091624; z-index: 10;
-  display: flex; flex-direction: column; padding: 10px 30px 16px; gap: 4px;
-}
-.textbox.centered {
-  background: none; border: none;
-  position: fixed; top: 0; height: 100%;
-  align-items: center; justify-content: center; text-align: center;
-}
-.textbox.nido-mode {
-  border-top: 1px solid #0b1828;
-  background: linear-gradient(180deg, rgba(2,3,8,0) 0%, rgba(2,3,8,.94) 12%, rgba(2,3,8,.99) 100%);
-}
+.textbox { position: fixed; bottom: 0; left: 0; right: 0; height: 41%; background: linear-gradient(180deg, rgba(2,4,10,0) 0%, rgba(2,4,10,.93) 13%, rgba(2,4,10,.98) 100%); border-top: 2px solid #091624; z-index: 10; display: flex; flex-direction: column; padding: 10px 30px 16px; gap: 4px; }
+.textbox.centered { background: none; border: none; position: fixed; top: 0; height: 100%; align-items: center; justify-content: center; text-align: center; }
+.textbox.nido-mode { border-top: 1px solid #0b1828; background: linear-gradient(180deg, rgba(2,3,8,0) 0%, rgba(2,3,8,.94) 12%, rgba(2,3,8,.99) 100%); }
+.textbox.flash-mode { background: linear-gradient(180deg, rgba(20,14,6,0) 0%, rgba(20,14,6,.88) 15%, rgba(16,10,4,.96) 100%); border-top: 1px solid #3a2810; }
 
-/* Speaker name — LARGE */
-.spk-row { height: 30px; display: flex; align-items: center; }
-.speaker {
-  font-family: 'VT323', monospace;
-  font-size: 26px; letter-spacing: 4px;
-  padding: 2px 12px;
-  border: 1px solid #0a1830;
-  background: #04080e;
-  display: inline-block; visibility: hidden; line-height: 1;
-}
+/* Speaker — LARGE */
+.spk-row { height: 32px; display: flex; align-items: center; }
+.speaker { font-family: 'VT323', monospace; font-size: 28px; letter-spacing: 4px; padding: 2px 12px; border: 1px solid #0a1830; background: #04080e; display: inline-block; visibility: hidden; line-height: 1; }
 .speaker.vis { visibility: visible; }
 
-.txt {
-  font-family: 'VT323', monospace;
-  font-size: clamp(20px, 4.4vw, 26px); line-height: 1.5; letter-spacing: .3px;
-  flex: 1; overflow: hidden;
-}
+.txt { font-family: 'VT323', monospace; font-size: clamp(20px, 4.4vw, 26px); line-height: 1.5; letter-spacing: .3px; flex: 1; overflow: hidden; }
 .txt.narr { color: #475d72; font-style: italic; }
-.txt.sys  {
-  font-family: 'Press Start 2P', monospace;
-  font-size: clamp(10px, 2.2vw, 13px); color: #283848; letter-spacing: 4px; line-height: 2;
-}
+.txt.narr-warm { color: #8a7260; font-style: italic; }
+.txt.sys  { font-family: 'Press Start 2P', monospace; font-size: clamp(10px, 2.2vw, 13px); color: #283848; letter-spacing: 4px; line-height: 2; }
 
 .hint { font-size: 12px; color: #142030; letter-spacing: 2px; text-align: right; opacity: 0; transition: opacity .3s; }
 .hint.show { opacity: 1; animation: bh 2.1s step-end infinite; }
+.hint.warm { color: #3a2a18; }
 @keyframes bh { 0%,100%{opacity:.7} 50%{opacity:.18} }
 
 /* ── FILE SELECT ── */
-.file-select {
-  display: none; position: fixed; inset: 0; z-index: 20;
-  flex-direction: column; align-items: center; justify-content: center; padding: 30px;
-}
+.file-select { display: none; position: fixed; inset: 0; z-index: 20; flex-direction: column; align-items: center; justify-content: center; padding: 30px; }
 .file-select.show { display: flex; }
 .fs-title { font-family: 'Press Start 2P', monospace; font-size: clamp(6px,1.4vw,8px); color: #1c2c3e; letter-spacing: 4px; margin-bottom: 22px; }
 .fs-entry { font-size: clamp(16px,3.4vw,20px); color: #1c2c3e; letter-spacing: 1px; padding: 8px 16px; margin-bottom: 5px; border: 1px solid #07101e; width: 100%; max-width: 400px; transition: color .2s, border-color .2s; }
@@ -158,9 +90,7 @@ body { color: #d0d8ea; font-family: 'VT323', monospace; cursor: pointer; user-se
 .fs-entry.locked { opacity: .22; cursor: not-allowed; }
 .fs-hint { font-size: 11px; color: #0e1c2a; letter-spacing: 2px; margin-top: 16px; }
 
-/* Candle flicker animation (applied via SVG animate or CSS class toggle) */
-@keyframes flicker { 0%,100%{opacity:1} 45%{opacity:.85} 70%{opacity:.95} 88%{opacity:.8} }
-.flame-anim { animation: flicker 1.1s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes flicker { 0%,100%{opacity:1;transform:scaleX(1)} 35%{opacity:.9;transform:scaleX(.94)} 65%{opacity:.82;transform:scaleX(1.04)} 80%{opacity:.95} }
 </style>
 </head>
 <body>
@@ -171,220 +101,484 @@ body { color: #d0d8ea; font-family: 'VT323', monospace; cursor: pointer; user-se
 <div class="prog" id="prog"></div>
 <div class="loc-tag" id="locTag"></div>
 <button class="back-btn" onclick="goBack()">← МЕНЮ</button>
-
-<!-- CSS atmosphere background -->
 <div class="bg bg-black" id="bg"></div>
 
-<!-- ═══ SCENE: ROOM ═══ -->
-<svg class="scene-svg" id="sceneRoom"
-     viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice"
-     xmlns="http://www.w3.org/2000/svg">
+<!-- ═══════════════════════════
+     SCENE: ROOM (поминки)
+     ═══════════════════════════ -->
+<svg class="scene-svg" id="sceneRoom" viewBox="0 0 1280 720"
+     preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="fGlowL" cx="50%" cy="70%" r="50%">
-      <stop offset="0%"   stop-color="#ff9900" stop-opacity=".20"/>
-      <stop offset="50%"  stop-color="#ff6600" stop-opacity=".08"/>
+    <radialGradient id="rFlameGL" cx="50%" cy="72%" r="52%">
+      <stop offset="0%"   stop-color="#ff9900" stop-opacity=".24"/>
+      <stop offset="55%"  stop-color="#ff6600" stop-opacity=".09"/>
       <stop offset="100%" stop-color="#ff3300" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="fGlowR" cx="50%" cy="70%" r="50%">
-      <stop offset="0%"   stop-color="#ff9900" stop-opacity=".20"/>
-      <stop offset="50%"  stop-color="#ff6600" stop-opacity=".08"/>
+    <radialGradient id="rFlameGR" cx="50%" cy="72%" r="52%">
+      <stop offset="0%"   stop-color="#ff9900" stop-opacity=".24"/>
+      <stop offset="55%"  stop-color="#ff6600" stop-opacity=".09"/>
       <stop offset="100%" stop-color="#ff3300" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="fShapeL" cx="50%" cy="72%" r="56%">
-      <stop offset="0%"   stop-color="#ffee55"/>
-      <stop offset="40%"  stop-color="#ff9900"/>
+    <radialGradient id="rFlameSL" cx="50%" cy="74%" r="58%">
+      <stop offset="0%"   stop-color="#fff066"/>
+      <stop offset="38%"  stop-color="#ffaa00"/>
       <stop offset="100%" stop-color="#cc4400" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="fShapeR" cx="50%" cy="72%" r="56%">
-      <stop offset="0%"   stop-color="#ffee55"/>
-      <stop offset="40%"  stop-color="#ff9900"/>
+    <radialGradient id="rFlameSR" cx="50%" cy="74%" r="58%">
+      <stop offset="0%"   stop-color="#fff066"/>
+      <stop offset="38%"  stop-color="#ffaa00"/>
       <stop offset="100%" stop-color="#cc4400" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="rWinMoon" cx="38%" cy="35%" r="50%">
+      <stop offset="0%"   stop-color="#1e2e48"/>
+      <stop offset="100%" stop-color="#08101e" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
-  <!-- Wall -->
-  <rect x="0" y="0" width="1280" height="410" fill="#070810"/>
-  <!-- Top fade darker -->
-  <rect x="0" y="0" width="1280" height="100" fill="#000" opacity=".25"/>
+  <!-- Wall (lighter) -->
+  <rect x="0" y="0" width="1280" height="420" fill="#111520"/>
+  <rect x="0" y="0" width="1280" height="120" fill="#000" opacity=".30"/>
   <!-- Floor -->
-  <rect x="0" y="410" width="1280" height="310" fill="#050608"/>
-  <!-- Wall/floor seam -->
-  <rect x="0" y="407" width="1280" height="5" fill="#0c0d1a"/>
+  <rect x="0" y="420" width="1280" height="300" fill="#0c0e18"/>
+  <!-- Seam -->
+  <rect x="0" y="416" width="1280" height="5" fill="#181c2c"/>
 
   <!-- Window left -->
-  <rect x="46" y="55" width="168" height="265" fill="#091220" rx="2"/>
-  <rect x="56" y="65" width="148" height="245" fill="#04080f"/>
-  <rect x="56" y="178" width="148" height="5" fill="#091220"/>
-  <rect x="128" y="65" width="5" height="245" fill="#091220"/>
-  <!-- Moon -->
-  <ellipse cx="92" cy="105" rx="28" ry="26" fill="#0d1826"/>
-  <ellipse cx="92" cy="103" rx="16" ry="15" fill="#131e2e"/>
-  <ellipse cx="88" cy="100" rx="8"  ry="7"  fill="#18243a"/>
+  <rect x="44" y="48" width="176" height="276" fill="#0c1830" rx="3"/>
+  <rect x="54" y="58" width="156" height="256" fill="#060c1a"/>
+  <rect x="54" y="178" width="156" height="5"  fill="#0c1830"/>
+  <rect x="130" y="58" width="5"   height="256" fill="#0c1830"/>
+  <!-- Moonlight wash -->
+  <ellipse cx="104" cy="118" rx="68" ry="58" fill="url(#rWinMoon)"/>
+  <ellipse cx="94"  cy="102" rx="22" ry="21" fill="#18263e"/>
+  <ellipse cx="92"  cy="100" rx="12" ry="12" fill="#1e2e44"/>
 
-  <!-- Small framed photo on wall (background detail) -->
-  <rect x="290" y="90" width="76" height="96" fill="#0e1126" rx="1"/>
-  <rect x="295" y="95" width="66" height="86" fill="#08090d"/>
+  <!-- Wall photo frame (detail) -->
+  <rect x="294" y="84" width="82" height="102" fill="#16182a" rx="2"/>
+  <rect x="300" y="90" width="70" height="90"  fill="#0e1020"/>
+  <rect x="304" y="94" width="62" height="82"  fill="#08090e"/>
 
   <!-- TABLE -->
-  <rect x="160" y="374" width="960" height="26" fill="#1c1408" rx="2"/>
-  <!-- Tablecloth highlight -->
-  <rect x="162" y="374" width="956" height="5" fill="#2e2014"/>
+  <rect x="148" y="368" width="984" height="28" fill="#2a1c0a" rx="2"/>
+  <rect x="150" y="368" width="980" height="5"  fill="#3e2c12"/>
   <!-- Legs -->
-  <rect x="196" y="400" width="22" height="88" fill="#170e06"/>
-  <rect x="1062" y="400" width="22" height="88" fill="#170e06"/>
-  <!-- Stretcher rail -->
-  <rect x="218" y="460" width="844" height="7" fill="#120b05"/>
+  <rect x="184" y="396" width="24" height="96" fill="#1e1206"/>
+  <rect x="1072" y="396" width="24" height="96" fill="#1e1206"/>
+  <rect x="208" y="468" width="864" height="8" fill="#180e05"/>
 
-  <!-- CANDLE L -->
-  <ellipse cx="390" cy="276" rx="64" ry="56" class="flame-anim" fill="url(#fGlowL)"/>
-  <ellipse cx="390" cy="268" rx="10" ry="18" class="flame-anim" fill="url(#fShapeL)"/>
-  <ellipse cx="390" cy="276" rx="4"  ry="5"  fill="#ffee99" opacity=".85"/>
-  <rect    x="381" y="290" width="18" height="88" fill="#221a0f" rx="2"/>
-  <rect    x="374" y="370" width="32" height="10" fill="#281e12" rx="3"/>
+  <!-- CANDLE L — glow → flame (order matters: glow first) -->
+  <ellipse cx="386" cy="270" rx="90" ry="78" fill="url(#rFlameGL)"/>
+  <ellipse cx="386" cy="258" rx="14" ry="24" style="animation:flicker 1.1s ease-in-out infinite" fill="url(#rFlameSL)"/>
+  <ellipse cx="386" cy="267" rx="5"  ry="6"  fill="#ffee99" opacity=".9"/>
+  <rect    x="376" y="283" width="20" height="90" fill="#2a2010" rx="2"/>
+  <rect    x="370" y="365" width="32" height="10" fill="#30260e" rx="3"/>
 
   <!-- CANDLE R -->
-  <ellipse cx="890" cy="276" rx="64" ry="56" class="flame-anim" fill="url(#fGlowR)"/>
-  <ellipse cx="890" cy="268" rx="10" ry="18" class="flame-anim" fill="url(#fShapeR)"/>
-  <ellipse cx="890" cy="276" rx="4"  ry="5"  fill="#ffee99" opacity=".85"/>
-  <rect    x="881" y="290" width="18" height="88" fill="#221a0f" rx="2"/>
-  <rect    x="874" y="370" width="32" height="10" fill="#281e12" rx="3"/>
+  <ellipse cx="894" cy="270" rx="90" ry="78" fill="url(#rFlameGR)"/>
+  <ellipse cx="894" cy="258" rx="14" ry="24" style="animation:flicker 1.3s ease-in-out infinite" fill="url(#rFlameSR)"/>
+  <ellipse cx="894" cy="267" rx="5"  ry="6"  fill="#ffee99" opacity=".9"/>
+  <rect    x="884" y="283" width="20" height="90" fill="#2a2010" rx="2"/>
+  <rect    x="878" y="365" width="32" height="10" fill="#30260e" rx="3"/>
 
-  <!-- PHOTO FRAME (center) -->
-  <rect x="608" y="284" width="64" height="88" fill="#1e2438" rx="2"/>
-  <rect x="613" y="289" width="54" height="78" fill="#0e1020"/>
-  <rect x="616" y="292" width="48" height="72" fill="#070810"/>
-  <!-- Face suggestion in photo -->
-  <ellipse cx="640" cy="316" rx="13" ry="14" fill="#0c0d18"/>
-  <ellipse cx="640" cy="310" rx="7"  ry="7"  fill="#0e1018"/>
+  <!-- PHOTO FRAME center -->
+  <rect x="604" y="278" width="72" height="90" fill="#22283e" rx="3"/>
+  <rect x="610" y="284" width="60" height="78" fill="#0e1222"/>
+  <rect x="614" y="288" width="52" height="70" fill="#080a10"/>
+  <ellipse cx="640" cy="316" rx="15" ry="16" fill="#0c0e1a"/>
+  <ellipse cx="640" cy="309" rx="8"  ry="8"  fill="#0f1020"/>
 
-  <!-- Carnations L (dark red clusters) -->
-  <ellipse cx="258" cy="378" rx="18" ry="9"  fill="#2c0b09"/>
-  <ellipse cx="276" cy="374" rx="12" ry="8"  fill="#260909"/>
-  <ellipse cx="245" cy="374" rx="10" ry="7"  fill="#320c0a"/>
-  <ellipse cx="268" cy="368" rx="8"  ry="6"  fill="#2a0a08"/>
+  <!-- Carnations L -->
+  <ellipse cx="254" cy="374" rx="20" ry="10" fill="#360e0c"/>
+  <ellipse cx="274" cy="370" rx="14" ry="9"  fill="#2e0a0a"/>
+  <ellipse cx="242" cy="370" rx="12" ry="8"  fill="#3e1010"/>
+  <ellipse cx="264" cy="362" rx="9"  ry="7"  fill="#340c0c"/>
 
   <!-- Carnations R -->
-  <ellipse cx="1022" cy="378" rx="18" ry="9"  fill="#2c0b09"/>
-  <ellipse cx="1004" cy="374" rx="12" ry="8"  fill="#260909"/>
-  <ellipse cx="1035" cy="374" rx="10" ry="7"  fill="#320c0a"/>
-  <ellipse cx="1012" cy="368" rx="8"  ry="6"  fill="#2a0a08"/>
+  <ellipse cx="1026" cy="374" rx="20" ry="10" fill="#360e0c"/>
+  <ellipse cx="1006" cy="370" rx="14" ry="9"  fill="#2e0a0a"/>
+  <ellipse cx="1038" cy="370" rx="12" ry="8"  fill="#3e1010"/>
+  <ellipse cx="1016" cy="362" rx="9"  ry="7"  fill="#340c0c"/>
 </svg>
 
-<!-- ═══ SCENE: DESK ═══ -->
-<svg class="scene-svg" id="sceneDesk"
-     viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice"
-     xmlns="http://www.w3.org/2000/svg">
+<!-- ═══════════════════════════
+     SCENE: DESK (комната Димы)
+     ═══════════════════════════ -->
+<svg class="scene-svg" id="sceneDesk" viewBox="0 0 1280 720"
+     preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="screenGlow" cx="50%" cy="50%" r="55%">
-      <stop offset="0%"   stop-color="#4488ff" stop-opacity=".65"/>
-      <stop offset="60%"  stop-color="#2266dd" stop-opacity=".25"/>
-      <stop offset="100%" stop-color="#1144bb" stop-opacity="0"/>
+    <radialGradient id="dMonitorGlow" cx="50%" cy="50%" r="55%">
+      <stop offset="0%"   stop-color="#2040a0" stop-opacity=".35"/>
+      <stop offset="70%"  stop-color="#102060" stop-opacity=".12"/>
+      <stop offset="100%" stop-color="#081030" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="deskReflect" cx="50%" cy="0%" r="70%">
-      <stop offset="0%"   stop-color="#2855cc" stop-opacity=".16"/>
-      <stop offset="100%" stop-color="#1a3a99" stop-opacity="0"/>
+    <radialGradient id="dDeskGlow" cx="50%" cy="0%" r="70%">
+      <stop offset="0%"   stop-color="#1a2e88" stop-opacity=".14"/>
+      <stop offset="100%" stop-color="#0a1844" stop-opacity="0"/>
     </radialGradient>
-    <filter id="screenBloom">
-      <feGaussianBlur stdDeviation="8" result="blur"/>
-      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-    </filter>
+    <linearGradient id="dWallpaper" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#0a0c1c"/>
+      <stop offset="50%"  stop-color="#0e1228"/>
+      <stop offset="100%" stop-color="#080a18"/>
+    </linearGradient>
   </defs>
 
-  <!-- Dark room wall -->
-  <rect x="0" y="0" width="1280" height="720" fill="#020408"/>
-  <!-- Top darker -->
-  <rect x="0" y="0" width="1280" height="80" fill="#000" opacity=".4"/>
+  <!-- Room -->
+  <rect x="0" y="0" width="1280" height="720" fill="#030509"/>
+  <rect x="0" y="0" width="1280" height="90" fill="#000" opacity=".5"/>
   <!-- Floor -->
-  <rect x="0" y="530" width="1280" height="190" fill="#030508"/>
-  <rect x="0" y="527" width="1280" height="4" fill="#06080e"/>
+  <rect x="0" y="530" width="1280" height="190" fill="#04060c"/>
+  <rect x="0" y="527" width="1280" height="4" fill="#08090f"/>
 
   <!-- Curtain / window right -->
-  <rect x="1030" y="0" width="250" height="520" fill="#060810"/>
-  <rect x="1042" y="12" width="226" height="496" fill="#040608"/>
-  <!-- Stars through curtain gap -->
-  <circle cx="1058" cy="48"  r="1.5" fill="#1c2636"/>
-  <circle cx="1094" cy="85"  r="1.2" fill="#1a2430"/>
-  <circle cx="1130" cy="38"  r="1.5" fill="#1c2636"/>
-  <circle cx="1158" cy="130" r="1.2" fill="#1a2430"/>
-  <circle cx="1100" cy="168" r="1.5" fill="#1c2636"/>
-  <circle cx="1200" cy="62"  r="1.2" fill="#1a2430"/>
-  <circle cx="1175" cy="200" r="1.2" fill="#1a2430"/>
-  <circle cx="1244" cy="110" r="1.5" fill="#1c2636"/>
-  <circle cx="1070" cy="240" r="1.2" fill="#1a2430"/>
-  <circle cx="1220" cy="280" r="1.5" fill="#1c2636"/>
+  <rect x="1032" y="0" width="248" height="524" fill="#07090f"/>
+  <rect x="1044" y="12" width="224" height="500" fill="#050709"/>
+  <!-- Stars -->
+  <circle cx="1062" cy="50"  r="1.5" fill="#202840"/>
+  <circle cx="1098" cy="88"  r="1.2" fill="#1e2438"/>
+  <circle cx="1136" cy="42"  r="1.5" fill="#202840"/>
+  <circle cx="1162" cy="136" r="1.2" fill="#1e2438"/>
+  <circle cx="1106" cy="172" r="1.5" fill="#202840"/>
+  <circle cx="1204" cy="66"  r="1.2" fill="#1e2438"/>
+  <circle cx="1178" cy="208" r="1.2" fill="#1e2438"/>
+  <circle cx="1248" cy="114" r="1.5" fill="#202840"/>
+  <circle cx="1074" cy="248" r="1.2" fill="#1e2438"/>
+  <circle cx="1224" cy="288" r="1.5" fill="#202840"/>
+  <circle cx="1150" cy="330" r="1.2" fill="#1e2438"/>
 
   <!-- Desk surface -->
-  <rect x="60"  y="450" width="1160" height="30" fill="#080c18"/>
-  <rect x="62"  y="480" width="1156" height="12" fill="#060810"/>
-  <rect x="62"  y="450" width="1156" height="4"  fill="#0e1428"/>
-  <!-- Desk legs -->
-  <rect x="82"  y="492" width="22" height="110" fill="#060810"/>
-  <rect x="1176" y="492" width="22" height="110" fill="#060810"/>
+  <rect x="58" y="448" width="1164" height="32" fill="#090d1c"/>
+  <rect x="60" y="480" width="1160" height="14" fill="#070810"/>
+  <rect x="60" y="448" width="1160" height="4"  fill="#101630"/>
+  <!-- Legs -->
+  <rect x="80"   y="494" width="24" height="116" fill="#07080e"/>
+  <rect x="1176" y="494" width="24" height="116" fill="#07080e"/>
 
-  <!-- Monitor glow reflected on desk -->
-  <ellipse cx="640" cy="454" rx="240" ry="10" fill="url(#deskReflect)"/>
+  <!-- Monitor glow on desk -->
+  <ellipse cx="640" cy="454" rx="260" ry="12" fill="url(#dDeskGlow)"/>
+  <!-- Monitor bloom halo in room -->
+  <rect x="360" y="90" width="560" height="380" fill="url(#dMonitorGlow)" opacity=".8"/>
 
   <!-- Monitor outer casing -->
-  <rect x="438" y="120" width="404" height="316" fill="#0c1020" rx="4"/>
+  <rect x="430" y="112" width="420" height="328" fill="#141620" rx="6"/>
   <!-- Monitor inner bezel -->
-  <rect x="448" y="130" width="384" height="296" fill="#080e1c" rx="3"/>
+  <rect x="442" y="124" width="396" height="304" fill="#0c0e1c" rx="4"/>
 
-  <!-- SCREEN — FULLY LIT BRIGHT BLUE -->
-  <rect x="456" y="138" width="368" height="280" fill="#1844a8" rx="1"/>
-  <!-- Screen bloom/glow halo -->
-  <rect x="426" y="110" width="428" height="340" fill="url(#screenGlow)" opacity=".9"/>
-  <!-- Screen inner glow -->
-  <rect x="456" y="138" width="368" height="280" fill="#1a4ab5" opacity=".4"/>
+  <!-- ╔══════════════════════╗
+       ║  MONITOR SCREEN      ║
+       ╚══════════════════════╝ -->
+  <!-- Screen area: x=450 y=132 w=380 h=288 -->
 
-  <!-- Screen content: NIDO interface visible on screen -->
-  <!-- Header bar -->
-  <rect x="456" y="138" width="368" height="26" fill="#0d2870" opacity=".8"/>
-  <rect x="462" y="147" width="80" height="5" fill="rgba(160,200,255,.35)"/>
-  <rect x="562" y="147" width="40" height="5" fill="rgba(160,200,255,.20)"/>
-  <!-- Screen body text lines (code / NIDO interface) -->
-  <rect x="466" y="184" width="130" height="5" fill="rgba(140,190,255,.28)"/>
-  <rect x="466" y="198" width="210" height="5" fill="rgba(140,190,255,.24)"/>
-  <rect x="466" y="212" width="95"  height="5" fill="rgba(140,190,255,.24)"/>
-  <rect x="466" y="226" width="175" height="5" fill="rgba(140,190,255,.24)"/>
-  <rect x="466" y="240" width="65"  height="5" fill="rgba(140,190,255,.24)"/>
-  <rect x="466" y="254" width="150" height="5" fill="rgba(140,190,255,.24)"/>
-  <rect x="466" y="268" width="110" height="5" fill="rgba(140,190,255,.24)"/>
-  <rect x="466" y="282" width="185" height="5" fill="rgba(140,190,255,.22)"/>
-  <rect x="466" y="296" width="80"  height="5" fill="rgba(140,190,255,.22)"/>
-  <rect x="466" y="310" width="140" height="5" fill="rgba(140,190,255,.22)"/>
-  <!-- Cursor blinking (static white rect; blink handled by CSS on body level won't work in SVG, just show it) -->
-  <rect x="466" y="326" width="13" height="9" fill="rgba(180,220,255,.55)"/>
-  <!-- Time: 3:17 (top right of screen, barely legible) -->
-  <rect x="756" y="144" width="58" height="14" fill="rgba(0,0,0,.35)"/>
-  <rect x="760" y="148" width="50" height="5" fill="rgba(160,200,255,.30)"/>
+  <!-- Desktop wallpaper (dark, purple-blue) -->
+  <rect x="450" y="132" width="380" height="288" fill="url(#dWallpaper)"/>
+  <!-- Wallpaper subtle mountain silhouette at bottom -->
+  <path d="M450,360 L490,300 L530,330 L580,270 L630,310 L680,260 L730,310 L780,280 L830,340 L830,420 L450,420 Z" fill="#0c0e20" opacity=".6"/>
+  <!-- Wallpaper subtle glow (warm star?) -->
+  <radialGradient id="dWpStar" cx="22%" cy="28%" r="30%">
+    <stop offset="0%" stop-color="#1a1a40" stop-opacity=".6"/>
+    <stop offset="100%" stop-color="#0a0a1e" stop-opacity="0"/>
+  </radialGradient>
+  <rect x="450" y="132" width="380" height="288" fill="url(#dWpStar)"/>
+  <!-- Desktop icons row (top right of screen) -->
+  <rect x="790" y="144" width="30" height="30" fill="#1a1e30" rx="3"/>
+  <rect x="793" y="147" width="24" height="18" fill="#2244aa" rx="1" opacity=".7"/>
+  <rect x="795" y="168" width="20" height="4" fill="#ccc" opacity=".3"/>
+  <rect x="790" y="180" width="30" height="30" fill="#1a1e30" rx="3"/>
+  <rect x="793" y="183" width="24" height="18" fill="#44aa66" rx="1" opacity=".6"/>
+  <rect x="795" y="204" width="20" height="4" fill="#ccc" opacity=".3"/>
 
-  <!-- Monitor stand neck -->
-  <rect x="628" y="438" width="24" height="18" fill="#0a0e1c"/>
-  <!-- Monitor base -->
-  <rect x="582" y="456" width="116" height="14" fill="#0c1018" rx="3"/>
+  <!-- ── File Explorer window ── -->
+  <!-- Window drop shadow -->
+  <rect x="458" y="144" width="294" height="208" fill="#000" opacity=".4" rx="4"/>
+  <!-- Window body -->
+  <rect x="456" y="142" width="294" height="208" fill="#1e1e1e" rx="4"/>
+  <!-- Title bar -->
+  <rect x="456" y="142" width="294" height="30" fill="#2c2c2c" rx="4"/>
+  <rect x="456" y="163" width="294" height="9"  fill="#2c2c2c"/>
+  <!-- Title bar folder icon -->
+  <rect x="462" y="150" width="14" height="11" fill="#f0a020" rx="2" opacity=".9"/>
+  <!-- Title text (repr as rects) -->
+  <rect x="480" y="152" width="72" height="5" fill="#e0e0e0" opacity=".7"/>
+  <rect x="480" y="159" width="44" height="3" fill="#aaa" opacity=".5"/>
+  <!-- Window buttons (right) -->
+  <rect x="726" y="147" width="16" height="16" fill="#e53935" rx="2" opacity=".9"/>
+  <rect x="708" y="147" width="16" height="16" fill="#505050" rx="2"/>
+  <rect x="690" y="147" width="16" height="16" fill="#505050" rx="2"/>
+  <!-- Window X mark -->
+  <line x1="729" y1="150" x2="739" y2="160" stroke="#fff" stroke-width="1.5" opacity=".8"/>
+  <line x1="739" y1="150" x2="729" y2="160" stroke="#fff" stroke-width="1.5" opacity=".8"/>
+
+  <!-- Ribbon/toolbar -->
+  <rect x="456" y="172" width="294" height="18" fill="#2a2a2a"/>
+  <rect x="460" y="175" width="32" height="11" fill="#3a3a3a" rx="1"/>
+  <rect x="496" y="175" width="32" height="11" fill="#3a3a3a" rx="1"/>
+  <rect x="532" y="175" width="32" height="11" fill="#3a3a3a" rx="1"/>
+  <rect x="462" y="178" width="26" height="4" fill="#999" opacity=".5"/>
+  <rect x="498" y="178" width="26" height="4" fill="#999" opacity=".5"/>
+  <rect x="534" y="178" width="26" height="4" fill="#999" opacity=".5"/>
+
+  <!-- Address bar -->
+  <rect x="456" y="190" width="294" height="18" fill="#252525"/>
+  <rect x="460" y="193" width="220" height="12" fill="#1a1a1a" rx="2"/>
+  <rect x="464" y="196" width="140" height="5" fill="#888" opacity=".6"/>
+
+  <!-- File area split: left nav + main -->
+  <rect x="456" y="208" width="294" height="142" fill="#f4f4f4" opacity=".92"/>
+  <!-- Left nav panel -->
+  <rect x="456" y="208" width="72" height="142" fill="#ebebeb" opacity=".92"/>
+  <rect x="460" y="214" width="62" height="8"  fill="#0066cc" opacity=".25" rx="2"/>
+  <rect x="460" y="226" width="56" height="5"  fill="#888" opacity=".4"/>
+  <rect x="460" y="235" width="50" height="5"  fill="#888" opacity=".35"/>
+  <rect x="460" y="244" width="60" height="5"  fill="#888" opacity=".35"/>
+  <rect x="460" y="253" width="48" height="5"  fill="#888" opacity=".35"/>
+  <rect x="460" y="262" width="54" height="5"  fill="#888" opacity=".3"/>
+  <rect x="460" y="271" width="46" height="5"  fill="#888" opacity=".3"/>
+  <rect x="456" y="316" width="72" height="34" fill="#ddd" opacity=".5"/>
+
+  <!-- Main file list area -->
+  <!-- Item 1 — selected (USB drive алиса) -->
+  <rect x="532" y="212" width="210" height="34" fill="#cde7ff" rx="2" opacity=".95"/>
+  <rect x="536" y="218" width="20" height="18" fill="#f0a020" rx="2" opacity=".9"/>
+  <rect x="562" y="220" width="80" height="5" fill="#222" opacity=".8"/>
+  <rect x="562" y="228" width="54" height="4" fill="#888" opacity=".6"/>
+  <!-- Item 2 -->
+  <rect x="532" y="250" width="210" height="28" fill="transparent"/>
+  <rect x="536" y="255" width="20" height="16" fill="#4a90d9" rx="2" opacity=".7"/>
+  <rect x="562" y="257" width="64" height="4" fill="#555" opacity=".6"/>
+  <rect x="562" y="264" width="42" height="3" fill="#aaa" opacity=".5"/>
+  <!-- Item 3 -->
+  <rect x="532" y="282" width="210" height="28" fill="transparent"/>
+  <rect x="536" y="287" width="20" height="16" fill="#4a90d9" rx="2" opacity=".7"/>
+  <rect x="562" y="289" width="72" height="4" fill="#555" opacity=".6"/>
+  <rect x="562" y="296" width="50" height="3" fill="#aaa" opacity=".5"/>
+  <!-- Item 4 -->
+  <rect x="532" y="314" width="210" height="28" fill="transparent"/>
+  <rect x="536" y="318" width="20" height="16" fill="#9c59d9" rx="2" opacity=".6"/>
+  <rect x="562" y="320" width="56" height="4" fill="#555" opacity=".6"/>
+  <rect x="562" y="327" width="38" height="3" fill="#aaa" opacity=".5"/>
+
+  <!-- Status bar at bottom of window -->
+  <rect x="456" y="342" width="294" height="8" fill="#e0e0e0" opacity=".9"/>
+  <rect x="460" y="344" width="100" height="3" fill="#888" opacity=".5"/>
+
+  <!-- ── Windows Taskbar ── -->
+  <rect x="450" y="400" width="380" height="20" fill="#1a1a28" opacity=".96"/>
+  <!-- Start button -->
+  <rect x="452" y="402" width="28" height="16" fill="#0066cc" rx="2" opacity=".8"/>
+  <rect x="455" y="405" width="8" height="2" fill="#fff" opacity=".6"/>
+  <rect x="455" y="409" width="8" height="2" fill="#fff" opacity=".6"/>
+  <rect x="455" y="413" width="8" height="2" fill="#fff" opacity=".6"/>
+  <!-- Search bar -->
+  <rect x="484" y="404" width="90" height="12" fill="#2c2c3c" rx="2"/>
+  <rect x="488" y="407" width="60" height="4" fill="#666" opacity=".4"/>
+  <!-- Taskbar app buttons -->
+  <rect x="578" y="404" width="24" height="12" fill="#f0a020" rx="1" opacity=".6"/>
+  <rect x="606" y="404" width="24" height="12" fill="#2a2a3a" rx="1" opacity=".5"/>
+  <!-- System tray right -->
+  <rect x="772" y="404" width="52" height="12" fill="#2a2a38" opacity=".5" rx="1"/>
+  <rect x="776" y="407" width="44" height="4" fill="#aaa" opacity=".25"/>
+  <!-- Time (3:17 AM) -->
+  <rect x="794" y="404" width="30" height="5"  fill="#bbb" opacity=".3"/>
+  <rect x="798" y="410" width="22" height="4"  fill="#bbb" opacity=".25"/>
+
+  <!-- Monitor stand -->
+  <rect x="626" y="440" width="28" height="18" fill="#0c1020"/>
+  <rect x="580" y="458" width="120" height="16" fill="#0c1018" rx="3"/>
 
   <!-- Keyboard -->
-  <rect x="394" y="434" width="372" height="22" fill="#07090e" rx="1"/>
-  <rect x="397" y="432" width="366" height="4"  fill="#0b0f1c"/>
-  <rect x="400" y="436" width="360" height="4"  fill="#0d1122" opacity=".7"/>
-  <rect x="400" y="442" width="360" height="4"  fill="#0d1122" opacity=".7"/>
-  <rect x="400" y="448" width="300" height="4"  fill="#0d1122" opacity=".7"/>
+  <rect x="390" y="430" width="380" height="24" fill="#080a10" rx="2"/>
+  <rect x="394" y="428" width="372" height="4"  fill="#0c1020"/>
+  <rect x="396" y="432" width="368" height="5"  fill="#0d1122" opacity=".6"/>
+  <rect x="396" y="439" width="368" height="5"  fill="#0d1122" opacity=".6"/>
+  <rect x="396" y="446" width="300" height="5"  fill="#0d1122" opacity=".6"/>
 
   <!-- Coffee mug -->
-  <rect x="202" y="428" width="36" height="36" fill="#07090e" rx="2"/>
-  <rect x="206" y="425" width="28" height="5"  fill="#0a0d18" rx="1"/>
-  <rect x="238" y="434" width="9"  height="16" fill="#060810" rx="2"/>
-  <!-- Mug hint of screen glow -->
-  <rect x="202" y="428" width="36" height="36" fill="rgba(20,60,200,.09)" rx="2"/>
+  <rect x="196" y="424" width="38" height="40" fill="#07090e" rx="3"/>
+  <rect x="200" y="422" width="30" height="5"  fill="#0a0d18" rx="1"/>
+  <rect x="234" y="432" width="10" height="18" fill="#060810" rx="2"/>
 
-  <!-- Papers / notebook -->
-  <rect x="872" y="432" width="88" height="22" fill="#070810" rx="1"/>
-  <rect x="876" y="429" width="80" height="5"  fill="#0a0b16"/>
-  <rect x="879" y="437" width="60" height="3"  fill="#0c0d18" opacity=".6"/>
-  <rect x="879" y="443" width="44" height="3"  fill="#0c0d18" opacity=".6"/>
+  <!-- Papers -->
+  <rect x="870" y="430" width="92" height="24" fill="#070810" rx="2"/>
+  <rect x="874" y="428" width="84" height="5"  fill="#0a0b16"/>
 </svg>
 
-<!-- UPPER -->
+<!-- ═══════════════════════════
+     SCENE: FLASH (воспоминание — барахолка)
+     ═══════════════════════════ -->
+<svg class="scene-svg" id="sceneFlash" viewBox="0 0 1280 720"
+     preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Alisa blur filter: soft memory look -->
+    <filter id="fMemBlur" x="-15%" y="-15%" width="130%" height="130%">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+    <!-- Background stalls blur -->
+    <filter id="fBgBlur" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+    <!-- Warm memory vignette -->
+    <radialGradient id="fVig" cx="50%" cy="48%" r="58%">
+      <stop offset="0%"   stop-color="transparent"/>
+      <stop offset="100%" stop-color="#b09060" stop-opacity=".5"/>
+    </radialGradient>
+    <!-- Lens flare / memory wash -->
+    <radialGradient id="fFlare" cx="28%" cy="22%" r="42%">
+      <stop offset="0%"   stop-color="#fff8e8" stop-opacity=".5"/>
+      <stop offset="100%" stop-color="#fff0cc" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Alisa dress gradient (light blue, shaded) -->
+    <linearGradient id="fDress" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%"   stop-color="#b8d8f4"/>
+      <stop offset="60%"  stop-color="#90c0ea"/>
+      <stop offset="100%" stop-color="#78b0de"/>
+    </linearGradient>
+    <!-- Hair gradient (yellow → orange) -->
+    <linearGradient id="fHair" x1="30%" y1="0%" x2="70%" y2="100%">
+      <stop offset="0%"   stop-color="#ffc830"/>
+      <stop offset="55%"  stop-color="#f09010"/>
+      <stop offset="100%" stop-color="#e07808"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky (warm summer day) -->
+  <rect x="0" y="0" width="1280" height="720" fill="#e8dfc0"/>
+  <rect x="0" y="0" width="1280" height="300" fill="#d8eefc" opacity=".45"/>
+  <!-- Ground -->
+  <rect x="0" y="560" width="1280" height="160" fill="#c8b888"/>
+  <rect x="0" y="555" width="1280" height="8"   fill="#baa870"/>
+
+  <!-- ── Market stalls (very blurry background) ── -->
+  <g filter="url(#fBgBlur)">
+    <!-- Left stall -->
+    <rect x="40"  y="200" width="200" height="280" fill="#b89870" opacity=".6"/>
+    <rect x="40"  y="185" width="220" height="30"  fill="#cc8844" opacity=".65"/>
+    <rect x="50"  y="215" width="60"  height="50"  fill="#e8c888" opacity=".5"/>
+    <rect x="120" y="220" width="50"  height="40"  fill="#d4a864" opacity=".5"/>
+    <!-- Middle-left stall -->
+    <rect x="290" y="220" width="160" height="240" fill="#a89068" opacity=".5"/>
+    <rect x="285" y="206" width="175" height="26"  fill="#6688aa" opacity=".55"/>
+    <!-- Right stall -->
+    <rect x="940" y="200" width="210" height="270" fill="#b89870" opacity=".6"/>
+    <rect x="935" y="184" width="226" height="28"  fill="#cc8844" opacity=".6"/>
+    <!-- Far right -->
+    <rect x="1090" y="210" width="180" height="260" fill="#a89070" opacity=".5"/>
+    <rect x="1085" y="197" width="192" height="26"  fill="#8899aa" opacity=".5"/>
+    <!-- People (abstract blobs) -->
+    <ellipse cx="240" cy="420" rx="28" ry="55" fill="#9a8060" opacity=".4"/>
+    <ellipse cx="860" cy="430" rx="24" ry="50" fill="#9a7850" opacity=".35"/>
+    <ellipse cx="1000" cy="415" rx="26" ry="52" fill="#a08868" opacity=".4"/>
+  </g>
+
+  <!-- Ground texture (blurry) -->
+  <g filter="url(#fBgBlur)">
+    <rect x="0" y="556" width="1280" height="164" fill="#c0b080"/>
+    <rect x="100" y="570" width="200" height="8" fill="#b0a060" opacity=".5"/>
+    <rect x="600" y="575" width="150" height="6" fill="#b0a060" opacity=".4"/>
+  </g>
+
+  <!-- ── ALISA figure (memory blur) ── -->
+  <g filter="url(#fMemBlur)">
+
+    <!-- Shadow below feet -->
+    <ellipse cx="616" cy="536" rx="65" ry="12" fill="#a09060" opacity=".35"/>
+
+    <!-- HAIR (yellow-orange) — drawn behind head -->
+    <ellipse cx="616" cy="202" rx="66" ry="60" fill="url(#fHair)"/>
+    <!-- Side strands -->
+    <ellipse cx="558" cy="250" rx="24" ry="52" fill="#e88c10" transform="rotate(-10,558,250)"/>
+    <ellipse cx="674" cy="242" rx="20" ry="44" fill="#e08808" transform="rotate(8,674,242)"/>
+    <!-- Hair highlight (lighter top) -->
+    <ellipse cx="600" cy="174" rx="36" ry="26" fill="#ffd840" opacity=".75"/>
+    <ellipse cx="618" cy="164" rx="20" ry="16" fill="#ffe060" opacity=".6"/>
+
+    <!-- HEAD -->
+    <ellipse cx="616" cy="236" rx="44" ry="46" fill="#f4dcbc"/>
+    <!-- Eyebrows -->
+    <path d="M598,222 Q606,218 614,222" stroke="#b09060" stroke-width="2.5" fill="none" opacity=".6" stroke-linecap="round"/>
+    <path d="M618,222 Q626,218 634,222" stroke="#b09060" stroke-width="2.5" fill="none" opacity=".6" stroke-linecap="round"/>
+    <!-- Eyes -->
+    <ellipse cx="604" cy="232" rx="6"  ry="7" fill="#7a5030" opacity=".8"/>
+    <ellipse cx="628" cy="232" rx="6"  ry="7" fill="#7a5030" opacity=".8"/>
+    <!-- Eye shine -->
+    <circle cx="601" cy="229" r="2" fill="#fff" opacity=".6"/>
+    <circle cx="625" cy="229" r="2" fill="#fff" opacity=".6"/>
+    <!-- Nose -->
+    <ellipse cx="616" cy="244" rx="3.5" ry="2.5" fill="#e0c0a0" opacity=".4"/>
+    <!-- Mouth (smile) -->
+    <path d="M607,256 Q616,264 625,256" stroke="#c09880" stroke-width="2.5" fill="none" opacity=".55" stroke-linecap="round"/>
+    <!-- Cheek blush -->
+    <ellipse cx="593" cy="246" rx="10" ry="6" fill="#f0a0a0" opacity=".22"/>
+    <ellipse cx="639" cy="246" rx="10" ry="6" fill="#f0a0a0" opacity=".22"/>
+
+    <!-- NECK -->
+    <rect x="604" y="278" width="24" height="28" fill="#f4dcbc" rx="6"/>
+
+    <!-- DRESS — LIGHT BLUE -->
+    <!-- Shoulders/collar -->
+    <ellipse cx="616" cy="302" rx="50" ry="18" fill="#c0d8f2" opacity=".8"/>
+    <!-- Bodice -->
+    <rect x="572" y="298" width="88" height="78" fill="url(#fDress)" rx="8"/>
+    <!-- Center bodice detail (bow/buttons) -->
+    <ellipse cx="616" cy="358" rx="8" ry="7" fill="#78b0de"/>
+    <ellipse cx="616" cy="344" rx="4" ry="4" fill="#88c0ec" opacity=".7"/>
+    <!-- Dress belt/waist -->
+    <rect x="566" y="368" width="100" height="10" fill="#80b4da" rx="3"/>
+
+    <!-- SKIRT (flared, trapezoid) -->
+    <path d="M572,375 L660,375 L698,526 L534,526 Z" fill="url(#fDress)"/>
+    <!-- Skirt center lighter -->
+    <path d="M590,375 L642,375 L668,526 L562,526 Z" fill="#c4daf4" opacity=".4"/>
+    <!-- Skirt hem -->
+    <rect x="534" y="520" width="164" height="8" fill="#80b0de" rx="3"/>
+    <!-- Petticoat/underskirt hint -->
+    <rect x="534" y="522" width="164" height="5" fill="#fff" opacity=".25" rx="2"/>
+
+    <!-- LEFT ARM (at side, slightly bent) -->
+    <ellipse cx="558" cy="356" rx="17" ry="46" fill="#f4dcbc" transform="rotate(8,558,356)"/>
+    <!-- Left hand -->
+    <ellipse cx="550" cy="400" rx="15" ry="13" fill="#f4dcbc"/>
+
+    <!-- RIGHT ARM (extended forward, holding duck) -->
+    <ellipse cx="674" cy="348" rx="17" ry="44" fill="#f4dcbc" transform="rotate(-16,674,348)"/>
+    <!-- Right forearm extended -->
+    <ellipse cx="700" cy="384" rx="14" ry="30" fill="#f4dcbc" transform="rotate(-30,700,384)"/>
+    <!-- Right hand -->
+    <ellipse cx="718" cy="406" rx="16" ry="13" fill="#f4dcbc"/>
+
+    <!-- DUCK (held in right arm) -->
+    <!-- Duck body -->
+    <ellipse cx="750" cy="406" rx="36" ry="30" fill="#d4aa00"/>
+    <!-- Duck head -->
+    <ellipse cx="764" cy="378" rx="24" ry="22" fill="#d4aa00"/>
+    <!-- Duck beak -->
+    <path d="M784,378 L800,374 L800,384 L784,384 Z" fill="#c06800" rx="2"/>
+    <!-- Duck eye -->
+    <circle cx="770" cy="372" r="5" fill="#080a10"/>
+    <circle cx="771" cy="371" r="2" fill="#d8eeff" opacity=".7"/>
+    <!-- Duck wing -->
+    <ellipse cx="740" cy="412" rx="20" ry="12" fill="#c09a00" opacity=".65" transform="rotate(-18,740,412)"/>
+    <!-- Duck tail -->
+    <ellipse cx="718" cy="422" rx="14" ry="10" fill="#c09a00" opacity=".5" transform="rotate(20,718,422)"/>
+
+    <!-- LEGS -->
+    <ellipse cx="582" cy="526" rx="20" ry="26" fill="#f4dcbc" opacity=".9"/>
+    <ellipse cx="650" cy="526" rx="20" ry="26" fill="#f4dcbc" opacity=".9"/>
+    <!-- Socks (white) -->
+    <ellipse cx="582" cy="548" rx="18" ry="10" fill="#f0eee0" opacity=".7"/>
+    <ellipse cx="650" cy="548" rx="18" ry="10" fill="#f0eee0" opacity=".7"/>
+    <!-- Shoes (brown strap) -->
+    <ellipse cx="581" cy="556" rx="24" ry="11" fill="#9a6828" opacity=".8"/>
+    <ellipse cx="651" cy="556" rx="24" ry="11" fill="#9a6828" opacity=".8"/>
+  </g>
+
+  <!-- Warm lens flare (top-left) -->
+  <ellipse cx="360" cy="158" rx="480" ry="340" fill="url(#fFlare)"/>
+  <!-- Memory warm overlay -->
+  <rect x="0" y="0" width="1280" height="720" fill="#fff8e0" opacity=".12"/>
+  <!-- Edge vignette (warm) -->
+  <rect x="0" y="0" width="1280" height="720" fill="url(#fVig)"/>
+</svg>
+
+<!-- UPPER AREA -->
 <div class="upper" id="upper">
 
   <div class="duck-wrap" id="duckArt">
@@ -483,46 +677,51 @@ const B = [
     text:'Она оставила это для тебя.' },
   { bg:'room', mode:'char', speaker:'мать алисы', color:'#7a8ea8',
     text:'Говорила — там её душа.' },
-  { bg:'room', mode:'narr',
-    text:'Флешка с брелоком-утёнком легла в ладонь.' },
-  { bg:'room', mode:'narr',
-    text:'Тёплая, хотя не должна была.' },
+  { bg:'room', mode:'narr', text:'Флешка с брелоком-утёнком легла в ладонь.' },
+  { bg:'room', mode:'narr', text:'Тёплая, хотя не должна была.' },
 
+  // DUCK CLOSE-UP
   { bg:'duck', mode:'narr', text:'Пуговка.' },
-  { bg:'duck', mode:'narr',
-    text:'Они нашли его вместе — на барахолке, в день знакомства. Алиса потянулась к нему раньше, чем успела объяснить зачем.' },
-  { bg:'duck', mode:'narr',
-    text:'«Синдром утёнка,» — сказала она тогда. — «Первое, что видишь, становится твоим навсегда.»' },
+
+  // FLASHBACK — барахолка, Алиса
+  { bg:'flash', mode:'narr-warm',
+    text:'Три года назад. Лето. Барахолка на краю города.' },
+  { bg:'flash', mode:'narr-warm',
+    text:'Алиса потянулась к нему раньше, чем успела объяснить зачем.' },
+  { bg:'flash', mode:'narr-warm',
+    text:'«Синдром утёнка,» — сказала она. — «Первое, что видишь, становится твоим навсегда.»' },
+
+  // Back to duck
   { bg:'duck', mode:'narr',
     text:'Дима носил его в кармане куртки три года. Рядом с ключами.' },
 
+  // DESK
   { bg:'desk', loc:'комната димы · 3:17 ночи', mode:'narr',
     text:'Три дня флешка пролежала рядом с клавиатурой.' },
   { bg:'desk', mode:'narr',
     text:'Дима не открывал занавески. Не отвечал на звонки.' },
   { bg:'desk', mode:'char', speaker:'дима', color:'#5e7aaa',
     text:'зачем она оставила это мне.' },
-  { bg:'desk', mode:'narr',
-    text:'Он знал ответ. Это было хуже.' },
-  { bg:'desk', mode:'char', speaker:'дима', color:'#5e7aaa',
-    text:'я должен был.' },
+  { bg:'desk', mode:'narr', text:'Он знал ответ. Это было хуже.' },
+  { bg:'desk', mode:'char', speaker:'дима', color:'#5e7aaa', text:'я должен был.' },
   { bg:'desk', mode:'narr', text:'...' },
-  { bg:'desk', mode:'narr',
-    text:'На четвёртый день он всё-таки вставил её в компьютер.' },
+  { bg:'desk', mode:'narr', text:'На четвёртый день он всё-таки вставил её в компьютер.' },
 
+  // NIDO LOADING
   { bg:'load', mode:'load', text:'' },
   { bg:'load', mode:'center', text:'добро пожаловать в гнездо.' },
 
+  // FIRST CONTACT
   { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#b8c4da', text:'привет.' },
   { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#b8c4da', text:'ты наконец пришёл.' },
-  { bg:'nido', mode:'char', speaker:'дима', color:'#5e7aaa', text:'...' },
-  { bg:'nido', mode:'char', speaker:'дима', color:'#5e7aaa', text:'это невозможно.' },
-  { bg:'nido', mode:'char', speaker:'дима', color:'#5e7aaa', text:'тебя нет. тебя больше нет.' },
+  { bg:'nido', mode:'char', speaker:'дима',      color:'#5e7aaa', text:'...' },
+  { bg:'nido', mode:'char', speaker:'дима',      color:'#5e7aaa', text:'это невозможно.' },
+  { bg:'nido', mode:'char', speaker:'дима',      color:'#5e7aaa', text:'тебя нет. тебя больше нет.' },
   { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#b8c4da', text:'я знаю.' },
   { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#b8c4da', text:'в системе застряло пять файлов.' },
   { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#b8c4da', text:'гнилых. они мешают мне уйти.' },
   { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#b8c4da', text:'помоги мне очистить их, дима.' },
-  { bg:'nido', mode:'char', speaker:'дима', color:'#5e7aaa', text:'а потом?' },
+  { bg:'nido', mode:'char', speaker:'дима',      color:'#5e7aaa', text:'а потом?' },
   { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#b8c4da', text:'потом я смогу отпустить тебя.' },
   { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#b8c4da', text:'...' },
   { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#b8c4da', text:'или ты меня.' },
@@ -535,55 +734,47 @@ const B = [
 // ═══════════════════════════════
 let cur = 0, ready = true, typing = false, typTimer = null;
 
-const elLoc   = document.getElementById('locTag');
-const elDuck  = document.getElementById('duckArt');
-const elFrame = document.getElementById('nidoFrame');
-const elLoad  = document.getElementById('loadUi');
-const elLoadB = document.getElementById('loadBar');
-const elTb    = document.getElementById('textbox');
-const elSpk   = document.getElementById('speaker');
-const elTxt   = document.getElementById('txt');
-const elHint  = document.getElementById('hint');
-const elFiles = document.getElementById('fileSelect');
-const elProg  = document.getElementById('prog');
-const elGfl   = document.getElementById('gfl');
-const elBg    = document.getElementById('bg');
-const elSRoom = document.getElementById('sceneRoom');
-const elSDesk = document.getElementById('sceneDesk');
+const elLoc    = document.getElementById('locTag');
+const elDuck   = document.getElementById('duckArt');
+const elFrame  = document.getElementById('nidoFrame');
+const elLoad   = document.getElementById('loadUi');
+const elLoadB  = document.getElementById('loadBar');
+const elTb     = document.getElementById('textbox');
+const elSpk    = document.getElementById('speaker');
+const elTxt    = document.getElementById('txt');
+const elHint   = document.getElementById('hint');
+const elFiles  = document.getElementById('fileSelect');
+const elProg   = document.getElementById('prog');
+const elGfl    = document.getElementById('gfl');
+const elBg     = document.getElementById('bg');
+const elSRoom  = document.getElementById('sceneRoom');
+const elSDesk  = document.getElementById('sceneDesk');
+const elSFlash = document.getElementById('sceneFlash');
 
 function glitch() {
-  elGfl.classList.remove('on');
-  void elGfl.offsetWidth;
-  elGfl.classList.add('on');
+  elGfl.classList.remove('on'); void elGfl.offsetWidth; elGfl.classList.add('on');
   setTimeout(() => elGfl.classList.remove('on'), 300);
 }
 
 function setBackground(name) {
   elBg.className = 'bg bg-' + name;
-  elSRoom.classList.toggle('show', name === 'room');
-  elSDesk.classList.toggle('show', name === 'desk');
+  elSRoom.classList.toggle('show',  name === 'room');
+  elSDesk.classList.toggle('show',  name === 'desk');
+  elSFlash.classList.toggle('show', name === 'flash');
 }
 
 function typeText(el, text, speed, onDone) {
   clearTimeout(typTimer);
-  el.textContent = '';
-  typing = true;
-  let i = 0;
+  el.textContent = ''; typing = true; let i = 0;
   (function step() {
-    if (i < text.length) {
-      el.textContent += text[i++];
-      typTimer = setTimeout(step, speed);
-    } else {
-      typing = false;
-      if (onDone) onDone();
-    }
+    if (i < text.length) { el.textContent += text[i++]; typTimer = setTimeout(step, speed); }
+    else { typing = false; if (onDone) onDone(); }
   })();
 }
 
 function showBeat(b) {
   const prev = cur > 0 ? B[cur-1] : null;
   const sceneChanged = !prev || prev.bg !== b.bg;
-
   elProg.style.width = (cur / (B.length - 1) * 100) + '%';
 
   if (sceneChanged) {
@@ -599,89 +790,65 @@ function showBeat(b) {
   elTb.style.display = 'flex';
   elTb.className = 'textbox';
   elSpk.className = 'speaker';
-  elSpk.textContent = '';
-  elSpk.style.color = '';
-  elTxt.className = 'txt';
-  elTxt.style.color = '';
-  elHint.classList.remove('show');
+  elSpk.textContent = ''; elSpk.style.color = '';
+  elTxt.className = 'txt'; elTxt.style.color = '';
+  elHint.classList.remove('show'); elHint.className = 'hint';
 
   if (b.mode === 'load') {
-    elTb.style.display = 'none';
-    elLoad.classList.add('show');
-    ready = false;
+    elTb.style.display = 'none'; elLoad.classList.add('show'); ready = false;
     setTimeout(() => { elLoadB.style.width = '100%'; }, 80);
     setTimeout(() => {
-      elLoad.classList.remove('show');
-      elLoadB.style.width = '0';
+      elLoad.classList.remove('show'); elLoadB.style.width = '0';
       cur++; showBeat(B[cur]);
     }, 2900);
     return;
   }
   if (b.mode === 'files') {
-    elTb.style.display = 'none';
-    elFiles.classList.add('show');
-    ready = false;
-    return;
+    elTb.style.display = 'none'; elFiles.classList.add('show'); ready = false; return;
   }
   if (b.mode === 'center') {
-    elTb.classList.add('centered');
-    elTxt.className = 'txt sys';
-    typeText(elTxt, b.text, 60, () => {
-      setTimeout(() => elHint.classList.add('show'), 700);
-      ready = true;
-    });
+    elTb.classList.add('centered'); elTxt.className = 'txt sys';
+    typeText(elTxt, b.text, 60, () => { setTimeout(() => elHint.classList.add('show'), 700); ready = true; });
     ready = false; return;
   }
   if (b.mode === 'narr') {
     elTxt.className = 'txt narr';
     if (b.bg === 'duck') elDuck.classList.add('show');
-    typeText(elTxt, b.text, 26, () => {
-      setTimeout(() => elHint.classList.add('show'), 500);
-      ready = true;
-    });
+    typeText(elTxt, b.text, 26, () => { setTimeout(() => elHint.classList.add('show'), 500); ready = true; });
+    ready = false; return;
+  }
+  if (b.mode === 'narr-warm') {
+    elTb.classList.add('flash-mode');
+    elTxt.className = 'txt narr-warm';
+    elHint.classList.add('warm');
+    typeText(elTxt, b.text, 26, () => { setTimeout(() => { elHint.classList.add('show'); }, 500); ready = true; });
     ready = false; return;
   }
   if (b.mode === 'duck') {
-    elTb.classList.add('nido-mode');
-    elFrame.classList.add('show');
-    elSpk.textContent = b.speaker || '';
-    elSpk.style.color = b.color || '';
-    elSpk.classList.add('vis');
+    elTb.classList.add('nido-mode'); elFrame.classList.add('show');
+    elSpk.textContent = b.speaker || ''; elSpk.style.color = b.color || ''; elSpk.classList.add('vis');
     elTxt.style.color = b.color || '';
-    typeText(elTxt, b.text, 36, () => {
-      setTimeout(() => elHint.classList.add('show'), 500);
-      ready = true;
-    });
+    typeText(elTxt, b.text, 36, () => { setTimeout(() => elHint.classList.add('show'), 500); ready = true; });
     ready = false; return;
   }
   if (b.mode === 'char') {
     if (b.bg === 'nido') { elTb.classList.add('nido-mode'); elFrame.classList.add('show'); }
     if (b.bg === 'duck') elDuck.classList.add('show');
-    elSpk.textContent = b.speaker || '';
-    elSpk.style.color = b.color || '';
-    elSpk.classList.add('vis');
+    elSpk.textContent = b.speaker || ''; elSpk.style.color = b.color || ''; elSpk.classList.add('vis');
     elTxt.style.color = b.color || '';
-    typeText(elTxt, b.text, 32, () => {
-      setTimeout(() => elHint.classList.add('show'), 400);
-      ready = true;
-    });
+    typeText(elTxt, b.text, 32, () => { setTimeout(() => elHint.classList.add('show'), 400); ready = true; });
     ready = false; return;
   }
 }
 
 function advance() {
   if (typing) {
-    clearTimeout(typTimer);
-    typing = false;
-    elTxt.textContent = B[cur].text;
-    elHint.classList.add('show');
-    ready = true;
-    return;
+    clearTimeout(typTimer); typing = false;
+    elTxt.textContent = B[cur].text; elHint.classList.add('show'); ready = true; return;
   }
   if (!ready) return;
   if (cur >= B.length - 1) return;
-  cur++;
-  showBeat(B[cur]);
+  cur++; showBeat(B[cur]);
 }
 
 function goToFile() { window.location.href = 'desktop.html'; }
@@ -692,8 +859,7 @@ setBackground('black');
 showBeat(B[0]);
 
 // ═══════════════════════════════
-//  AUDIO — эмоциональная музыка-шкатулка
-//  E minor pentatonic: E3 G3 A3 B3 D4 E4 G4 B4
+//  AUDIO — music box E minor
 // ═══════════════════════════════
 const AC = window.AudioContext || window.webkitAudioContext;
 let actx = null;
@@ -703,8 +869,7 @@ function makeRev(s) {
   const buf = actx.createBuffer(2, len, actx.sampleRate);
   for (let c = 0; c < 2; c++) {
     const d = buf.getChannelData(c);
-    for (let i = 0; i < len; i++)
-      d[i] = (Math.random()*2-1) * Math.pow(1-i/len, 2.8);
+    for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1) * Math.pow(1-i/len, 2.8);
   }
   const cv = actx.createConvolver(); cv.buffer = buf; return cv;
 }
@@ -712,78 +877,59 @@ function makeRev(s) {
 function startAudio() {
   if (actx) return;
   actx = new AC();
-
   const mg = actx.createGain(); mg.gain.value = 0;
   const cp = actx.createDynamicsCompressor();
   mg.connect(cp); cp.connect(actx.destination);
-  mg.gain.linearRampToValueAtTime(0.55, actx.currentTime + 5);
+  mg.gain.linearRampToValueAtTime(0.52, actx.currentTime + 5);
 
-  // Reverb (long, 10s)
   const rv = makeRev(10);
-  const rvg = actx.createGain(); rvg.gain.value = .75;
-  rv.connect(rvg); rvg.connect(mg);
-  const dry = actx.createGain(); dry.gain.value = .08; dry.connect(mg);
+  const rvg = actx.createGain(); rvg.gain.value = .72; rv.connect(rvg); rvg.connect(mg);
+  const dry = actx.createGain(); dry.gain.value = .07; dry.connect(mg);
   const wire = n => { n.connect(rv); n.connect(dry); };
 
-  // E minor pentatonic frequencies
+  // E minor pentatonic
   const scale = [164.81, 196.00, 220.00, 246.94, 293.66, 329.63, 392.00, 493.88];
-  // Melody motif indices: G4, E4, D4, E4, B3, G3, A3, E3
-  const motif = [6, 5, 4, 5, 3, 1, 2, 0, 5, 6, 4, 3];
+  const motif = [6, 5, 4, 5, 3, 1, 2, 0, 5, 6, 3, 4];
   let mIdx = 0;
 
-  function pluck(freq, vol, when) {
-    const now = when || actx.currentTime;
-    const o = actx.createOscillator();
-    const o2 = actx.createOscillator(); // slight overtone
-    const g = actx.createGain();
-    o.type = 'sine';
-    o2.type = 'sine';
-    o.frequency.value = freq;
-    o2.frequency.value = freq * 2.003; // slightly detuned octave add colour
-    const g2 = actx.createGain(); g2.gain.value = 0.08;
-    // Envelope: fast attack, slow exponential decay (music box)
-    g.gain.setValueAtTime(0, now);
-    g.gain.linearRampToValueAtTime(vol, now + 0.006);
-    g.gain.exponentialRampToValueAtTime(0.001, now + 3.0);
-    o.connect(g); o2.connect(g2);
-    g.connect(rv); g.connect(dry);
-    g2.connect(rv);
-    o.start(now); o2.start(now);
-    o.stop(now + 3.5); o2.stop(now + 3.5);
+  function pluck(freq, vol, delay) {
+    const when = actx.currentTime + (delay || 0);
+    const o = actx.createOscillator(), g = actx.createGain();
+    const o2 = actx.createOscillator(), g2 = actx.createGain();
+    o.type = 'sine'; o2.type = 'sine';
+    o.frequency.value = freq; o2.frequency.value = freq * 2.002;
+    g2.gain.value = 0.07;
+    g.gain.setValueAtTime(0, when);
+    g.gain.linearRampToValueAtTime(vol, when + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.001, when + 2.8);
+    o.connect(g); o2.connect(g2); g.connect(rv); g.connect(dry); g2.connect(rv);
+    o.start(when); o2.start(when); o.stop(when + 3.2); o2.stop(when + 3.2);
   }
 
   function playMotif() {
     if (!actx) return;
-    const freq = scale[motif[mIdx % motif.length]];
-    pluck(freq, 0.18);
-    // Occasionally add a bass note
-    if (mIdx % 4 === 0) {
-      setTimeout(() => { if(actx) pluck(82.41, 0.07); }, 320); // E2
-    }
+    pluck(scale[motif[mIdx % motif.length]], 0.18);
+    if (mIdx % 4 === 0) pluck(82.41, 0.07, 0.35);
     mIdx++;
-    setTimeout(playMotif, 1400 + Math.random() * 1100);
+    setTimeout(playMotif, 1500 + Math.random() * 1000);
   }
 
-  // Soft chord pad underneath (E minor: E3 G3 B3, very quiet)
+  // Soft E minor chord pad
   [164.81, 196.00, 246.94].forEach((f, i) => {
-    const o = actx.createOscillator();
-    const g = actx.createGain();
-    o.type = 'triangle'; o.frequency.value = f;
-    g.gain.value = 0;
-    const lfo = actx.createOscillator();
-    const lg = actx.createGain();
-    lfo.frequency.value = 0.05 + i * 0.015; lg.gain.value = 0.012;
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = 'triangle'; o.frequency.value = f; g.gain.value = 0;
+    const lfo = actx.createOscillator(), lg = actx.createGain();
+    lfo.frequency.value = 0.05 + i * 0.014; lg.gain.value = 0.012;
     lfo.connect(lg); lg.connect(g.gain); lfo.start();
-    g.gain.linearRampToValueAtTime(0.018 + i * 0.004, actx.currentTime + 8 + i * 3);
+    g.gain.linearRampToValueAtTime(0.016 + i * 0.004, actx.currentTime + 8 + i * 3);
     o.connect(g); wire(g); o.start();
   });
 
-  // Start melody after short delay
   setTimeout(playMotif, 1800);
 }
 
-window.addEventListener('load', () => { startAudio(); if(actx && actx.state==='suspended') actx.resume(); });
-document.addEventListener('click', () => { startAudio(); if(actx && actx.state!=='running') actx.resume(); });
+window.addEventListener('load', () => { startAudio(); if(actx&&actx.state==='suspended') actx.resume(); });
+document.addEventListener('click', () => { startAudio(); if(actx&&actx.state!=='running') actx.resume(); });
 </script>
 </body>
 </html>
