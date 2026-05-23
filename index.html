@@ -497,35 +497,41 @@ input[type=range]:hover::-webkit-slider-thumb {
 .warn-inner {
   position: relative; z-index: 2;
   max-width: 460px; width: 90%;
+  max-height: 92vh;
+  overflow-y: auto;
   display: flex; flex-direction: column; align-items: center;
-  padding: 24px 16px;
+  padding: 20px 16px 28px;
   text-align: center;
+  scrollbar-width: thin;
+  scrollbar-color: #1e3050 transparent;
 }
+.warn-inner::-webkit-scrollbar { width: 4px; }
+.warn-inner::-webkit-scrollbar-thumb { background: #1e3050; }
 
 .warn-tag {
   font-family: 'Press Start 2P', monospace;
-  font-size: clamp(8px, 2vw, 11px);
+  font-size: clamp(7px, 1.8vw, 10px);
   color: var(--red);
-  letter-spacing: 4px;
+  letter-spacing: 3px;
   text-shadow: 0 0 14px rgba(255,34,68,.55);
-  margin-bottom: 36px;
+  margin-bottom: 20px;
   animation: flicker 8s infinite;
 }
 
 .warn-duck-small {
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   opacity: .7;
   animation: dglitch 11s infinite 3s;
 }
 
 .warn-lines {
   font-family: 'VT323', monospace;
-  font-size: clamp(19px, 4.5vw, 23px);
+  font-size: clamp(16px, 3.8vw, 19px);
   color: #5a6e88;
-  line-height: 1.85;
+  line-height: 1.6;
   letter-spacing: 1px;
-  margin-bottom: 32px;
-  min-height: 180px;
+  margin-bottom: 18px;
+  min-height: 0;
 }
 .wl {
   display: block;
@@ -539,32 +545,33 @@ input[type=range]:hover::-webkit-slider-thumb {
 .warn-sep {
   width: 60%; height: 1px;
   background: linear-gradient(90deg, transparent, #1e3050, transparent);
-  margin: 8px auto 28px;
+  margin: 6px auto 18px;
   opacity: 0;
   transition: opacity .8s;
 }
 
 .warn-crisis {
   font-family: 'VT323', monospace;
-  font-size: clamp(17px, 4vw, 21px);
+  font-size: clamp(15px, 3.5vw, 18px);
   color: #4a5e78;
-  line-height: 1.9;
-  margin-bottom: 36px;
+  line-height: 1.7;
+  margin-bottom: 22px;
   opacity: 0; transition: opacity 1s;
 }
 .crisis-num {
   display: block;
-  font-size: clamp(19px, 4.5vw, 24px);
+  font-size: clamp(17px, 4vw, 21px);
   color: var(--cyan);
   text-shadow: 0 0 10px rgba(0,229,255,.4);
   letter-spacing: 2px;
   margin: 4px 0;
 }
-.crisis-note { color: #334455; font-size: clamp(13px, 3vw, 16px); }
+.crisis-note { color: #334455; font-size: clamp(12px, 2.8vw, 14px); }
 
 .warn-btns {
   display: flex; gap: 12px;
   opacity: 0; transition: opacity .8s;
+  padding-bottom: 8px;
 }
 .warn-ok {
   font-family: 'Press Start 2P', monospace;
