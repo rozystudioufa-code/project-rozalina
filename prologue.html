@@ -7,260 +7,202 @@
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --red:    #ff2244;
-  --cyan:   #00e5ff;
-  --bright: #e8e8f0;
-  --dim:    #5a6e88;
+  --red:   #ff2244;
+  --cyan:  #00e5ff;
+  --bg:    #d8dde8;
+  --dim:   #3a4e66;
 }
-
-html, body { height: 100%; overflow: hidden; }
-
+html, body { height: 100%; overflow: hidden; background: #000; }
 body {
-  background: #000;
-  color: var(--bright);
+  color: var(--bg);
   font-family: 'VT323', monospace;
-  cursor: pointer;
-  user-select: none;
-  position: relative;
+  cursor: pointer; user-select: none;
 }
 
-/* ── CRT ── */
+/* ── LAYERS ── */
+#bgCanvas {
+  position: fixed; inset: 0; z-index: 1;
+  width: 100vw; height: 100vh;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
 .scanlines {
-  position: fixed; inset: 0;
+  position: fixed; inset: 0; z-index: 90; pointer-events: none;
   background: repeating-linear-gradient(
-    0deg, transparent, transparent 3px,
-    rgba(0,0,0,.12) 3px, rgba(0,0,0,.12) 4px
+    0deg, transparent, transparent 2px,
+    rgba(0,0,0,.09) 2px, rgba(0,0,0,.09) 3px
   );
-  z-index: 90; pointer-events: none;
 }
 .vignette {
-  position: fixed; inset: 0;
-  background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.85) 100%);
-  z-index: 89; pointer-events: none;
+  position: fixed; inset: 0; z-index: 89; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.94) 100%);
 }
-.gflash {
-  position: fixed; inset: 0; z-index: 88; pointer-events: none;
-  opacity: 0;
-}
-.gflash.on { animation: gfl .3s ease forwards; }
+.gflash { position: fixed; inset: 0; z-index: 88; pointer-events: none; opacity: 0; }
+.gflash.on { animation: gfl .28s ease forwards; }
 @keyframes gfl {
-  0%{opacity:0} 20%{opacity:.15;background:#000} 50%{opacity:.08;background:var(--red)} 100%{opacity:0}
+  0%{opacity:0} 15%{opacity:.22;background:#000} 45%{opacity:.10;background:var(--red)} 100%{opacity:0}
 }
 
-/* ── BACKGROUND ── */
-.bg {
-  position: fixed; inset: 0; z-index: 1;
-  transition: opacity .5s ease;
+/* ── CHROME ── */
+.prog {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: var(--cyan); box-shadow: 0 0 4px rgba(0,229,255,.4);
+  z-index: 95; opacity: .28; transition: width .3s;
 }
-.bg-black { background: #000; }
-.bg-room {
-  background:
-    radial-gradient(ellipse 35% 55% at 18% 72%, rgba(80,50,12,.32) 0%, transparent 60%),
-    radial-gradient(ellipse 30% 45% at 78% 65%, rgba(80,50,12,.22) 0%, transparent 55%),
-    linear-gradient(180deg, #06080f 0%, #0a0c17 60%, #080b13 100%);
+.loc-tag {
+  position: fixed; top: 16px; left: 20px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px; color: #1c2c40; letter-spacing: 2px;
+  z-index: 30; pointer-events: none;
 }
-.bg-duck {
-  background:
-    radial-gradient(ellipse 55% 65% at 50% 32%, rgba(15,30,60,.55) 0%, transparent 70%),
-    linear-gradient(180deg, #050810 0%, #030610 100%);
+.back-btn {
+  position: fixed; top: 14px; right: 18px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px; color: #182636; letter-spacing: 1px;
+  background: none; border: none; cursor: pointer; z-index: 95;
+  transition: color .2s;
 }
-.bg-desk {
-  background:
-    radial-gradient(ellipse 65% 38% at 50% 36%, rgba(12,40,100,.48) 0%, transparent 65%),
-    radial-gradient(ellipse 25% 18% at 50% 36%, rgba(30,70,180,.18) 0%, transparent 50%),
-    linear-gradient(180deg, #02040b 0%, #050810 100%);
-}
-.bg-load { background: #000; }
-.bg-nido {
-  background: #03050c;
-}
-.bg-nido::before {
-  content: '';
-  position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(0,100,180,.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,100,180,.025) 1px, transparent 1px);
-  background-size: 28px 28px;
-}
-.bg-files {
-  background: linear-gradient(180deg, #02040b 0%, #050810 100%);
-}
+.back-btn:hover { color: #3a5068; }
 
-/* ── UPPER AREA ── */
+/* ── UPPER (visual area) ── */
 .upper {
   position: fixed; top: 0; left: 0; right: 0;
-  height: 56%; z-index: 5;
+  height: 55%; z-index: 5;
   display: flex; align-items: center; justify-content: center;
   pointer-events: none;
 }
 
-.loc-tag {
-  position: absolute; top: 18px; left: 22px;
-  font-family: 'VT323', monospace;
-  font-size: 13px; color: #2a3a52; letter-spacing: 2px;
-}
-
-/* duck art */
+/* Large duck close-up */
 .duck-wrap {
-  opacity: 0; transition: opacity .6s ease;
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  opacity: 0; transition: opacity .7s ease;
+  filter: drop-shadow(0 0 24px rgba(180,130,0,.20));
 }
 .duck-wrap.show { opacity: 1; }
 
 /* NIDO chat frame */
 .nido-frame {
-  border: 1px solid #0e1e38;
-  background: #030610;
-  padding: 10px 14px;
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
   opacity: 0; transition: opacity .6s ease;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: 12px 20px;
+  background: #020508;
+  border: 1px solid #0b1828;
+  box-shadow: 0 0 40px rgba(0,40,100,.10);
 }
 .nido-frame.show { opacity: 1; }
-.nido-frame-title {
+.nido-frame-hdr {
   font-family: 'Press Start 2P', monospace;
-  font-size: 6px; color: #2a3a55; letter-spacing: 3px;
-  border-bottom: 1px solid #0e1e38;
-  padding-bottom: 8px; width: 100%; text-align: center;
+  font-size: 5px; color: #1a2a3e; letter-spacing: 3px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #0a1428;
+  width: 100%; text-align: center;
 }
-.nido-user {
-  font-family: 'VT323', monospace;
-  font-size: 12px; color: #445566; letter-spacing: 1px;
-}
+.nido-status { font-size: 12px; color: #1c2e44; letter-spacing: 1px; }
 
-/* ── LOAD SCREEN ── */
-.load-ui {
-  display: none; flex-direction: column; align-items: center; gap: 16px;
-  text-align: center;
-}
+/* Loading bar */
+.load-ui { display: none; flex-direction: column; align-items: center; gap: 14px; }
 .load-ui.show { display: flex; }
-.load-label {
-  font-family: 'VT323', monospace; font-size: 16px;
-  color: #334455; letter-spacing: 2px;
-}
+.load-label { font-size: 14px; color: #1a2a3e; letter-spacing: 3px; }
 .load-bar-wrap {
-  width: 220px; height: 6px;
-  border: 1px solid #1a2e4a; background: #030810;
+  width: 196px; height: 4px;
+  border: 1px solid #0c1c30; background: #020508;
 }
 .load-bar {
   height: 100%; width: 0;
   background: var(--cyan);
-  box-shadow: 0 0 8px rgba(0,229,255,.5);
-  transition: width 2.4s linear;
+  box-shadow: 0 0 6px rgba(0,229,255,.5);
+  transition: width 2.5s linear;
 }
 
 /* ── TEXTBOX ── */
 .textbox {
   position: fixed; bottom: 0; left: 0; right: 0;
-  height: 44%;
+  height: 42%;
   background: linear-gradient(180deg,
-    rgba(3,5,12,0) 0%,
-    rgba(3,5,12,.9) 10%,
-    rgba(3,5,12,.97) 100%);
-  border-top: 1px solid #0a1428;
+    rgba(2,4,10,0) 0%,
+    rgba(2,4,10,.93) 13%,
+    rgba(2,4,10,.98) 100%);
+  border-top: 2px solid #091624;
   z-index: 10;
   display: flex; flex-direction: column;
-  padding: 14px 28px 16px; gap: 8px;
+  padding: 10px 28px 16px; gap: 5px;
 }
-
-/* center mode override */
 .textbox.centered {
   background: none; border: none;
-  top: 0; height: 100%;
+  position: fixed; top: 0; height: 100%;
   align-items: center; justify-content: center; text-align: center;
 }
-
-/* NIDO chat mode */
 .textbox.nido-mode {
-  border-top: 1px solid #0e1e38;
+  border-top: 1px solid #0b1828;
   background: linear-gradient(180deg,
-    rgba(2,3,10,0) 0%,
-    rgba(2,3,10,.95) 8%,
-    rgba(2,3,10,.99) 100%);
+    rgba(2,3,8,0) 0%,
+    rgba(2,3,8,.94) 12%,
+    rgba(2,3,8,.99) 100%);
 }
 
+/* Speaker name */
+.spk-row { height: 22px; display: flex; align-items: center; }
 .speaker {
   font-family: 'Press Start 2P', monospace;
-  font-size: 8px; letter-spacing: 2px; min-height: 14px;
+  font-size: 7px; letter-spacing: 2px;
+  padding: 3px 9px;
+  border: 1px solid #091624;
+  background: #050a14;
+  display: inline-block;
+  visibility: hidden;
 }
+.speaker.vis { visibility: visible; }
 
+/* Dialogue text */
 .txt {
   font-family: 'VT323', monospace;
-  font-size: clamp(20px, 4.5vw, 25px);
-  line-height: 1.55; letter-spacing: .5px;
+  font-size: clamp(20px, 4.6vw, 26px);
+  line-height: 1.5; letter-spacing: .3px;
   flex: 1; overflow: hidden;
 }
-.txt.narr  { color: #55697e; font-style: italic; }
-.txt.sys   {
+.txt.narr { color: #485e74; font-style: italic; }
+.txt.sys  {
   font-family: 'Press Start 2P', monospace;
   font-size: clamp(10px, 2.2vw, 13px);
-  color: #3a4e66; letter-spacing: 3px; line-height: 1.9;
+  color: #283848; letter-spacing: 4px; line-height: 2;
 }
 
+/* Continue hint */
 .hint {
-  font-family: 'VT323', monospace;
-  font-size: 13px; color: #1e2e44; letter-spacing: 2px;
-  text-align: right; opacity: 0; transition: opacity .4s;
+  font-size: 12px; color: #162230; letter-spacing: 2px;
+  text-align: right; opacity: 0; transition: opacity .3s;
 }
-.hint.show { opacity: 1; animation: bh 2.2s step-end infinite; }
-@keyframes bh { 0%,100%{opacity:.7} 50%{opacity:.2} }
-
-/* progress */
-.prog {
-  position: fixed; top: 0; left: 0; height: 2px;
-  background: var(--cyan); box-shadow: 0 0 5px rgba(0,229,255,.4);
-  z-index: 95; opacity: .35; transition: width .3s;
-}
+.hint.show { opacity: 1; animation: bh 2.1s step-end infinite; }
+@keyframes bh { 0%,100%{opacity:.7} 50%{opacity:.18} }
 
 /* ── FILE SELECT ── */
 .file-select {
   display: none; position: fixed; inset: 0; z-index: 20;
   flex-direction: column; align-items: center; justify-content: center;
-  padding: 24px;
+  padding: 30px;
 }
 .file-select.show { display: flex; }
-
 .fs-title {
   font-family: 'Press Start 2P', monospace;
-  font-size: clamp(7px, 1.8vw, 10px);
-  color: #2a3a55; letter-spacing: 4px; margin-bottom: 28px;
+  font-size: clamp(6px, 1.4vw, 8px);
+  color: #1c2c3e; letter-spacing: 4px; margin-bottom: 22px;
 }
-
 .fs-entry {
-  font-family: 'VT323', monospace;
-  font-size: clamp(17px, 3.8vw, 21px);
-  color: #2a3a55; letter-spacing: 1px;
-  padding: 9px 18px; margin-bottom: 6px;
-  border: 1px solid #0a1428;
-  width: 100%; max-width: 440px;
-  transition: color .2s, border-color .2s, background .2s;
+  font-size: clamp(16px, 3.4vw, 20px);
+  color: #1c2c3e; letter-spacing: 1px;
+  padding: 8px 16px; margin-bottom: 5px;
+  border: 1px solid #07101e;
+  width: 100%; max-width: 400px;
+  transition: color .2s, border-color .2s;
 }
-.fs-entry.active {
-  color: #6688bb; border-color: #1e3050; cursor: pointer;
-}
+.fs-entry.active { color: #4e6e9e; border-color: #142036; cursor: pointer; }
 .fs-entry.active:hover {
-  color: var(--cyan); border-color: var(--cyan);
-  background: rgba(0,229,255,.04);
-  text-shadow: 0 0 8px rgba(0,229,255,.3);
+  color: var(--cyan); border-color: #1a3050;
+  background: rgba(0,229,255,.03);
+  text-shadow: 0 0 8px rgba(0,229,255,.22);
 }
-.fs-entry.locked { opacity: .3; cursor: not-allowed; }
-
-.fs-hint {
-  font-family: 'VT323', monospace;
-  font-size: 13px; color: #1a2a3a; letter-spacing: 2px;
-  margin-top: 20px;
-}
-
-/* back button */
-.back-btn {
-  position: fixed; top: 16px; right: 20px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 7px; color: #1e2e44; letter-spacing: 1px;
-  background: none; border: none; cursor: pointer; z-index: 95;
-  transition: color .2s;
-}
-.back-btn:hover { color: #445566; }
+.fs-entry.locked { opacity: .22; cursor: not-allowed; }
+.fs-hint { font-size: 11px; color: #0e1c2a; letter-spacing: 2px; margin-top: 16px; }
 </style>
 </head>
 <body>
@@ -269,20 +211,17 @@ body {
 <div class="vignette"></div>
 <div class="gflash" id="gfl"></div>
 <div class="prog" id="prog"></div>
+<div class="loc-tag" id="locTag"></div>
 <button class="back-btn" onclick="goBack()">← МЕНЮ</button>
 
-<!-- BG -->
-<div class="bg bg-black" id="bg"></div>
+<canvas id="bgCanvas" width="320" height="180"></canvas>
 
-<!-- UPPER AREA -->
 <div class="upper" id="upper">
-  <div class="loc-tag" id="locTag"></div>
 
-  <!-- Duck close-up (scenes 3) -->
+  <!-- Duck close-up (bg:duck scenes) -->
   <div class="duck-wrap" id="duckArt">
     <svg width="148" height="137" viewBox="0 0 14 13"
-         xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated"
-         filter="drop-shadow(0 0 18px rgba(212,168,0,.28))">
+         xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
       <rect x="2" y="5"  width="8" height="5" fill="#d4a800"/>
       <rect x="1" y="6"  width="1" height="3" fill="#d4a800"/>
       <rect x="10" y="6" width="1" height="2" fill="#d4a800"/>
@@ -298,14 +237,15 @@ body {
       <rect x="8" y="1"  width="2" height="1" fill="#f0c830" opacity=".5"/>
       <rect x="10" y="1" width="2" height="2" fill="#080a10"/>
       <rect x="11" y="1" width="1" height="1" fill="#d8eeff" opacity=".38"/>
+      <rect x="10" y="2" width="1" height="1" fill="#2a4070" opacity=".25"/>
       <rect x="12" y="2" width="2" height="2" fill="#c07000"/>
       <rect x="12" y="3" width="2" height="1" fill="#904e00" opacity=".7"/>
       <rect x="3" y="6"  width="6" height="1" fill="#b88a00" opacity=".6"/>
       <rect x="4" y="7"  width="1" height="1" fill="#8a6600" opacity=".5"/>
       <rect x="6" y="7"  width="1" height="1" fill="#8a6600" opacity=".5"/>
       <rect x="8" y="7"  width="1" height="1" fill="#8a6600" opacity=".5"/>
-      <rect x="5" y="5"  width="1" height="3" fill="#ff2244" opacity=".18"/>
-      <rect x="5" y="8"  width="2" height="1" fill="#ff2244" opacity=".10"/>
+      <rect x="5" y="5"  width="1" height="3" fill="#ff2244" opacity=".16"/>
+      <rect x="5" y="8"  width="2" height="1" fill="#ff2244" opacity=".08"/>
       <rect x="3" y="10" width="1" height="1" fill="#a07000"/>
       <rect x="3" y="11" width="4" height="1" fill="#c07000"/>
       <rect x="7" y="10" width="1" height="1" fill="#a07000"/>
@@ -313,10 +253,10 @@ body {
     </svg>
   </div>
 
-  <!-- NIDO chat frame (scenes 6-9) -->
+  <!-- NIDO chat frame (bg:nido scenes) -->
   <div class="nido-frame" id="nidoFrame">
-    <div class="nido-frame-title">NIDO · ЛИЧНЫЕ СООБЩЕНИЯ</div>
-    <svg width="64" height="59" viewBox="0 0 14 13"
+    <div class="nido-frame-hdr">NIDO · ЛИЧНЫЕ СООБЩЕНИЯ</div>
+    <svg width="56" height="52" viewBox="0 0 14 13"
          xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
       <rect x="2" y="5"  width="8" height="5" fill="#d4a800"/>
       <rect x="1" y="6"  width="1" height="3" fill="#d4a800"/>
@@ -332,19 +272,20 @@ body {
       <rect x="2" y="5"  width="1" height="3" fill="#b88a00"/>
       <rect x="3" y="6"  width="6" height="1" fill="#b88a00" opacity=".5"/>
     </svg>
-    <div class="nido-user">алиса.exe · онлайн</div>
+    <div class="nido-status">алиса.exe · онлайн</div>
   </div>
 
-  <!-- LOAD UI -->
+  <!-- Loading -->
   <div class="load-ui" id="loadUi">
     <div class="load-label" id="loadLabel">NIDO v.0.1 // инициализация...</div>
     <div class="load-bar-wrap"><div class="load-bar" id="loadBar"></div></div>
   </div>
+
 </div>
 
 <!-- TEXTBOX -->
 <div class="textbox" id="textbox">
-  <div class="speaker" id="speaker"></div>
+  <div class="spk-row"><div class="speaker" id="speaker"></div></div>
   <div class="txt" id="txt"></div>
   <div class="hint" id="hint">нажми чтобы продолжить ▶</div>
 </div>
@@ -352,116 +293,290 @@ body {
 <!-- FILE SELECT -->
 <div class="file-select" id="fileSelect">
   <div class="fs-title">// ФАЙЛЫ · СИСТЕМА NIDO</div>
-  <div class="fs-entry active" onclick="goToFile()">
-    [ФАЙЛ_01] &nbsp; ты должна быть лучшей
-  </div>
+  <div class="fs-entry active" onclick="goToFile()">[ФАЙЛ_01] &nbsp; ты должна быть лучшей</div>
   <div class="fs-entry locked">[ФАЙЛ_02] &nbsp; интернет-друзья</div>
   <div class="fs-entry locked">[ФАЙЛ_03] &nbsp; идеальная я</div>
   <div class="fs-entry locked">[ФАЙЛ_04] &nbsp; хейтер</div>
   <div class="fs-entry locked">[ФАЙЛ_05] &nbsp; мама</div>
-  <div class="fs-hint">// файлы 02–05 заблокированы &nbsp;·&nbsp; очисти файл 01 чтобы продолжить</div>
+  <div class="fs-hint">// файлы 02–05 заблокированы · очисти файл 01 чтобы продолжить</div>
 </div>
 
 <script>
-// ═══════════════════════════
-//  BEATS — сценарий пролога
-// ═══════════════════════════
-const B = [
-  // 1 — Маркер времени
-  { bg:'black', mode:'center', text:'полгода назад.' },
-  { bg:'black', mode:'center', text:'дима не отвечал на звонки.' },
+// ═══════════════════════════════
+//  PIXEL ART BACKGROUNDS
+// ═══════════════════════════════
+const cv = document.getElementById('bgCanvas');
+const cx = cv.getContext('2d');
+cx.imageSmoothingEnabled = false;
 
-  // 2 — Поминки
+function r(x, y, w, h, col) {
+  cx.fillStyle = col;
+  cx.fillRect(x, y, w, h);
+}
+
+const SCENES = {
+
+  black() {
+    r(0,0,320,180,'#000');
+  },
+
+  room() {
+    // Wall
+    r(0,0,320,180,'#070810');
+    // Floor
+    r(0,118,320,62,'#050609');
+    r(0,116,320,2,'#0a0c16');
+
+    // Window left
+    r(20,12,56,86,'#0a1220'); // frame
+    r(24,16,48,78,'#050810'); // glass dark
+    r(24,54,48,2,'#0a1220'); // h-bar
+    r(47,16,2,78,'#0a1220'); // v-bar
+    // faint moonlight tint
+    r(25,17,21,36,'#060a14');
+    r(50,17,21,36,'#070b14');
+    // moon glow dot
+    r(34,22,4,4,'#0e1828');
+    r(35,23,2,2,'#141e2e');
+
+    // Table
+    r(66,104,188,8,'#130f07');
+    r(68,112,184,3,'#09070a');
+    r(74,115,10,22,'#110d06'); // leg L
+    r(236,115,10,22,'#110d06'); // leg R
+    r(68,104,184,2,'#1c1710'); // tablecloth highlight
+
+    // Candle L
+    r(112,76,7,28,'#1a1510');
+    r(110,101,11,5,'#1f1910');
+    r(113,73,5,3,'#aa3300');
+    r(115,70,2,3,'#ff7700');
+    r(115,69,2,1,'#ffcc00');
+    r(108,66,16,12,'#1e0900'); // glow
+
+    // Candle R
+    r(201,76,7,28,'#1a1510');
+    r(199,101,11,5,'#1f1910');
+    r(202,73,5,3,'#aa3300');
+    r(204,70,2,3,'#ff7700');
+    r(204,69,2,1,'#ffcc00');
+    r(197,66,16,12,'#1e0900');
+
+    // Photo frame center
+    r(145,72,30,32,'#1c2232'); // outer
+    r(148,75,24,26,'#0d1018'); // inner mat
+    r(150,77,20,22,'#080a0e'); // photo dark
+    r(156,81,8,6,'#0c0e14');  // face suggestion
+
+    // Carnations L
+    r(74,99,5,4,'#2e0b09'); r(80,97,4,3,'#260808'); r(85,101,3,3,'#2e0b09');
+    // Carnations R
+    r(225,99,5,4,'#2e0b09'); r(231,97,4,3,'#260808'); r(221,101,3,3,'#2e0b09');
+
+    // Small framed photo on wall (background)
+    r(230,30,22,26,'#0c0e16');
+    r(232,32,18,22,'#080a0e');
+  },
+
+  duck() {
+    r(0,0,320,180,'#030510');
+    // vignette via edge darkening
+    for(let i=0;i<40;i++){
+      const a=(40-i)/1200;
+      cx.fillStyle=`rgba(0,0,0,${a})`;
+      cx.fillRect(i,0,1,180); cx.fillRect(319-i,0,1,180);
+      cx.fillRect(0,i,320,1); cx.fillRect(0,179-i,320,1);
+    }
+    // center glow subtle
+    r(110,28,100,124,'#040818');
+  },
+
+  desk() {
+    r(0,0,320,180,'#020408');
+    // floor
+    r(0,130,320,50,'#030509');
+    r(0,128,320,2,'#06080e');
+
+    // Curtains / window right
+    r(256,8,54,110,'#060810');
+    r(259,11,48,104,'#040608');
+    // stars
+    r(264,24,1,1,'#18202c'); r(277,36,1,1,'#18202c');
+    r(286,28,1,1,'#191f2b'); r(270,50,1,1,'#18202c');
+    r(294,42,1,1,'#18202c'); r(281,60,1,1,'#17202a');
+    r(268,68,1,1,'#16202a'); r(290,72,1,1,'#18202c');
+
+    // Desk
+    r(32,110,256,11,'#080c14');
+    r(34,121,252,3,'#050709');
+    r(40,124,8,24,'#060910'); // leg L
+    r(272,124,8,24,'#060910'); // leg R
+
+    // Monitor body
+    r(104,34,112,78,'#0b1020');
+    r(108,38,104,68,'#080d1a');
+    r(110,40,100,64,'#0a1228'); // screen bg
+    // Screen content (faint code lines)
+    r(116,50,46,2,'#152040'); r(116,56,66,2,'#152040');
+    r(116,62,40,2,'#152040'); r(116,68,58,2,'#152040');
+    r(116,74,32,2,'#152040'); r(116,80,12,2,'#1e2e52');
+    // screen top-right time glow
+    r(176,44,18,7,'#0c1c3a');
+    // monitor glow on desk surface
+    r(96,108,128,3,'#09152e');
+
+    // Stand
+    r(150,112,18,5,'#090c16'); r(136,117,48,4,'#0c1018');
+
+    // Keyboard
+    r(106,102,108,9,'#07090e');
+    r(108,100,104,2,'#0b0f1a');
+    for(let k=110;k<210;k+=7) r(k,101,5,1,'#0d1120');
+
+    // Coffee mug
+    r(62,100,18,13,'#07090e');
+    r(64,98,14,2,'#0a0c16');
+    r(80,104,5,7,'#060810'); // handle
+
+    // Papers on desk
+    r(228,104,32,7,'#080c12'); r(230,102,28,2,'#0a0e18');
+
+    // Books on right side of desk
+    r(62,98,6,12,'#0a0c14'); r(69,100,5,10,'#08090e');
+  },
+
+  load() {
+    r(0,0,320,180,'#000');
+  },
+
+  nido() {
+    r(0,0,320,180,'#020409');
+    // grid
+    for(let gx=0;gx<320;gx+=14) r(gx,0,1,180,'#040810');
+    for(let gy=0;gy<180;gy+=14) r(0,gy,320,1,'#040810');
+    // header bar
+    r(0,0,320,14,'#030611'); r(0,14,320,1,'#0b1528');
+    // status bar
+    r(0,172,320,8,'#030611'); r(0,172,320,1,'#0b1528');
+    // NIDO logo (N shape, 3px font)
+    r(10,3,2,8,'#0d1c30'); r(14,3,2,8,'#0d1c30');
+    r(11,5,3,2,'#0d1c30');
+  },
+
+  files() {
+    r(0,0,320,180,'#020409');
+    for(let gx=0;gx<320;gx+=14) r(gx,0,1,180,'#03070d');
+    for(let gy=0;gy<180;gy+=14) r(0,gy,320,1,'#03070d');
+    r(0,0,320,14,'#030611'); r(0,14,320,1,'#0b1528');
+    r(0,172,320,8,'#030611'); r(0,172,320,1,'#0b1528');
+  }
+};
+
+function drawScene(name) {
+  cx.clearRect(0,0,320,180);
+  if(SCENES[name]) SCENES[name]();
+}
+
+// ═══════════════════════════════
+//  BEATS
+// ═══════════════════════════════
+const B = [
+  // — Временной маркер —
+  { bg:'black', mode:'center', text:'6 месяцев назад.' },
+  { bg:'black', mode:'center', text:'Алисы больше нет.' },
+
+  // — Поминки —
   { bg:'room', loc:'поминки · квартира алисы', mode:'narr',
-    text:'Квартира пахла гвоздиками и тем тяжёлым, что бывает только в таких местах.' },
+    text:'Квартира пахла гвоздиками. Дима стоял у двери и не мог войти.' },
   { bg:'room', mode:'narr',
-    text:'Дима не помнил, как добрался. Не помнил, как снял куртку.' },
-  { bg:'room', mode:'char', speaker:'мать алисы', color:'#8899bb',
+    text:'Люди разговаривали. Ели. Кто-то плакал в кухне. Дима не понимал, как это можно — есть.' },
+  { bg:'room', mode:'char', speaker:'мать алисы', color:'#7a8ea8',
     text:'Она оставила это для тебя.' },
-  { bg:'room', mode:'char', speaker:'мать алисы', color:'#8899bb',
+  { bg:'room', mode:'char', speaker:'мать алисы', color:'#7a8ea8',
     text:'Говорила — там её душа.' },
   { bg:'room', mode:'narr',
-    text:'Флешка с брелоком-утёнком легла в ладонь. Тёплая.' },
+    text:'Флешка с брелоком-утёнком легла в ладонь.' },
+  { bg:'room', mode:'narr',
+    text:'Тёплая, хотя не должна была.' },
 
-  // 3 — Утёнок
+  // — Синдром утёнка —
   { bg:'duck', mode:'narr', text:'Пуговка.' },
-  { bg:'duck', mode:'narr', text:'Они нашли его вместе — на барахолке, в день знакомства.' },
   { bg:'duck', mode:'narr',
-    text:'Алиса тогда рассказала про синдром утёнка. Первое, что видишь — становится твоим.' },
-  { bg:'duck', mode:'narr', text:'Дима носил его в кармане куртки. Три года.' },
+    text:'Они нашли его вместе — на барахолке, в день знакомства. Алиса потянулась к нему раньше, чем успела объяснить зачем.' },
+  { bg:'duck', mode:'narr',
+    text:'«Синдром утёнка,» — сказала она тогда. — «Первое, что видишь, становится твоим навсегда.»' },
+  { bg:'duck', mode:'narr',
+    text:'Дима носил его в кармане куртки три года. Рядом с ключами.' },
 
-  // 4 — Комната Димы
+  // — Комната Димы —
   { bg:'desk', loc:'комната димы · 3:17 ночи', mode:'narr',
-    text:'Три дня флешка лежала на столе.' },
-  { bg:'desk', mode:'narr', text:'Дима не спал.' },
-  { bg:'desk', mode:'char', speaker:'дима', color:'#7788cc',
-    text:'(зачем она это оставила)' },
-  { bg:'desk', mode:'char', speaker:'дима', color:'#7788cc',
-    text:'(зачем именно мне)' },
-  { bg:'desk', mode:'narr', text:'На четвёртый день — он вставил её в компьютер.' },
+    text:'Три дня флешка пролежала рядом с клавиатурой.' },
+  { bg:'desk', mode:'narr',
+    text:'Дима не открывал занавески. Не отвечал на звонки.' },
+  { bg:'desk', mode:'char', speaker:'дима', color:'#5e7aaa',
+    text:'зачем она оставила это мне.' },
+  { bg:'desk', mode:'narr',
+    text:'Он знал ответ. Это было хуже.' },
+  { bg:'desk', mode:'char', speaker:'дима', color:'#5e7aaa',
+    text:'я должен был.' },
+  { bg:'desk', mode:'narr', text:'...' },
+  { bg:'desk', mode:'narr',
+    text:'На четвёртый день он всё-таки вставил её в компьютер.' },
 
-  // 5 — Загрузка
+  // — Загрузка —
   { bg:'load', mode:'load', text:'' },
   { bg:'load', mode:'center', text:'добро пожаловать в гнездо.' },
 
-  // 6 — Утёнок говорит
-  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#d8ddf0', text:'привет.' },
-  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#d8ddf0', text:'ты наконец пришёл.' },
+  // — Первый контакт —
+  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#c0cade', text:'привет.' },
+  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#c0cade', text:'ты наконец пришёл.' },
+  { bg:'nido', mode:'char', speaker:'дима', color:'#5e7aaa', text:'...' },
+  { bg:'nido', mode:'char', speaker:'дима', color:'#5e7aaa', text:'это невозможно.' },
+  { bg:'nido', mode:'char', speaker:'дима', color:'#5e7aaa', text:'тебя нет. тебя больше нет.' },
+  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#c0cade', text:'я знаю.' },
 
-  // 7 — Реакция Димы
-  { bg:'nido', mode:'char', speaker:'дима', color:'#7788cc', text:'...' },
-  { bg:'nido', mode:'char', speaker:'дима', color:'#7788cc', text:'это невозможно.' },
-  { bg:'nido', mode:'char', speaker:'дима', color:'#7788cc', text:'её больше нет.' },
-  { bg:'nido', mode:'char', speaker:'дима', color:'#7788cc', text:'но голос — её голос.' },
-
-  // 8 — Задание
-  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#d8ddf0',
+  // — Задание —
+  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#c0cade',
     text:'в системе застряло пять файлов.' },
-  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#d8ddf0',
+  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#c0cade',
     text:'гнилых. они мешают мне уйти.' },
-  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#d8ddf0',
+  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#c0cade',
     text:'помоги мне очистить их, дима.' },
 
-  // 9 — Договор
-  { bg:'nido', mode:'char', speaker:'дима', color:'#7788cc',
-    text:'и что будет потом?' },
-  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#d8ddf0',
+  // — Договор —
+  { bg:'nido', mode:'char', speaker:'дима', color:'#5e7aaa', text:'а потом?' },
+  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#c0cade',
     text:'потом я смогу отпустить тебя.' },
-  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#d8ddf0', text:'...' },
-  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#d8ddf0',
-    text:'или ты меня.' },
+  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#c0cade', text:'...' },
+  { bg:'nido', mode:'duck', speaker:'алиса.exe', color:'#c0cade', text:'или ты меня.' },
 
-  // 10 — Выбор файла
+  // — Выбор файла —
   { bg:'files', mode:'files', text:'' },
 ];
 
-// ═══════════════════════════
+// ═══════════════════════════════
 //  ENGINE
-// ═══════════════════════════
-let cur = 0;
-let ready = true;
-let typing = false;
-let typTimer = null;
+// ═══════════════════════════════
+let cur = 0, ready = true, typing = false, typTimer = null;
 
-const elBg     = document.getElementById('bg');
-const elLoc    = document.getElementById('locTag');
-const elDuck   = document.getElementById('duckArt');
-const elFrame  = document.getElementById('nidoFrame');
-const elLoad   = document.getElementById('loadUi');
-const elLoadB  = document.getElementById('loadBar');
-const elTb     = document.getElementById('textbox');
-const elSpk    = document.getElementById('speaker');
-const elTxt    = document.getElementById('txt');
-const elHint   = document.getElementById('hint');
-const elFiles  = document.getElementById('fileSelect');
-const elProg   = document.getElementById('prog');
-const elGfl    = document.getElementById('gfl');
+const elLoc   = document.getElementById('locTag');
+const elDuck  = document.getElementById('duckArt');
+const elFrame = document.getElementById('nidoFrame');
+const elLoad  = document.getElementById('loadUi');
+const elLoadB = document.getElementById('loadBar');
+const elTb    = document.getElementById('textbox');
+const elSpk   = document.getElementById('speaker');
+const elTxt   = document.getElementById('txt');
+const elHint  = document.getElementById('hint');
+const elFiles = document.getElementById('fileSelect');
+const elProg  = document.getElementById('prog');
+const elGfl   = document.getElementById('gfl');
 
 function glitch() {
   elGfl.classList.remove('on');
   void elGfl.offsetWidth;
   elGfl.classList.add('on');
-  setTimeout(() => elGfl.classList.remove('on'), 320);
+  setTimeout(() => elGfl.classList.remove('on'), 300);
 }
 
 function typeText(el, text, speed, onDone) {
@@ -469,7 +584,7 @@ function typeText(el, text, speed, onDone) {
   el.textContent = '';
   typing = true;
   let i = 0;
-  function step() {
+  (function step() {
     if (i < text.length) {
       el.textContent += text[i++];
       typTimer = setTimeout(step, speed);
@@ -477,50 +592,50 @@ function typeText(el, text, speed, onDone) {
       typing = false;
       if (onDone) onDone();
     }
-  }
-  step();
+  })();
 }
 
 function showBeat(b) {
   const prev = cur > 0 ? B[cur-1] : null;
   const sceneChanged = !prev || prev.bg !== b.bg;
 
-  // progress bar
   elProg.style.width = (cur / (B.length - 1) * 100) + '%';
 
-  // glitch on scene change
-  if (sceneChanged && cur > 0) glitch();
+  if (sceneChanged) {
+    if (cur > 0) glitch();
+    setTimeout(() => drawScene(b.bg), cur > 0 ? 55 : 0);
+  }
 
-  // background
-  elBg.className = 'bg bg-' + b.bg;
-
-  // location tag
   elLoc.textContent = b.loc || '';
 
-  // hide all upper elements first
+  // reset
   elDuck.classList.remove('show');
   elFrame.classList.remove('show');
   elLoad.classList.remove('show');
   elFiles.classList.remove('show');
   elTb.style.display = 'flex';
   elTb.className = 'textbox';
+  elSpk.className = 'speaker';
+  elSpk.textContent = '';
+  elSpk.style.color = '';
+  elTxt.className = 'txt';
+  elTxt.style.color = '';
+  elHint.classList.remove('show');
 
-  // ── LOAD MODE ──
   if (b.mode === 'load') {
     elTb.style.display = 'none';
     elLoad.classList.add('show');
     ready = false;
-    elLoadB.style.width = '0';
     setTimeout(() => { elLoadB.style.width = '100%'; }, 80);
     setTimeout(() => {
       elLoad.classList.remove('show');
+      elLoadB.style.width = '0';
       cur++;
       showBeat(B[cur]);
-    }, 2800);
+    }, 2900);
     return;
   }
 
-  // ── FILES MODE ──
   if (b.mode === 'files') {
     elTb.style.display = 'none';
     elFiles.classList.add('show');
@@ -528,45 +643,36 @@ function showBeat(b) {
     return;
   }
 
-  // ── CENTER MODE ──
   if (b.mode === 'center') {
     elTb.classList.add('centered');
-    elSpk.textContent = '';
     elTxt.className = 'txt sys';
-    elHint.classList.remove('show');
-    typeText(elTxt, b.text, 55, () => {
-      setTimeout(() => elHint.classList.add('show'), 600);
+    typeText(elTxt, b.text, 60, () => {
+      setTimeout(() => elHint.classList.add('show'), 700);
       ready = true;
     });
     ready = false;
     return;
   }
 
-  // ── NARR MODE ──
   if (b.mode === 'narr') {
-    elSpk.textContent = '';
     elTxt.className = 'txt narr';
-    elHint.classList.remove('show');
-    typeText(elTxt, b.text, 28, () => {
+    if (b.bg === 'duck') elDuck.classList.add('show');
+    typeText(elTxt, b.text, 26, () => {
       setTimeout(() => elHint.classList.add('show'), 500);
       ready = true;
     });
-    // duck visible in duck scene
-    if (b.bg === 'duck') elDuck.classList.add('show');
     ready = false;
     return;
   }
 
-  // ── DUCK MODE ──
   if (b.mode === 'duck') {
     elTb.classList.add('nido-mode');
     elFrame.classList.add('show');
     elSpk.textContent = b.speaker || '';
-    elSpk.style.color = b.color || '#e8e8f0';
-    elTxt.className = 'txt';
-    elTxt.style.color = b.color || '#e8e8f0';
-    elHint.classList.remove('show');
-    typeText(elTxt, b.text, 38, () => {
+    elSpk.style.color = b.color || '';
+    elSpk.classList.add('vis');
+    elTxt.style.color = b.color || '';
+    typeText(elTxt, b.text, 36, () => {
       setTimeout(() => elHint.classList.add('show'), 500);
       ready = true;
     });
@@ -574,17 +680,14 @@ function showBeat(b) {
     return;
   }
 
-  // ── CHAR MODE ──
   if (b.mode === 'char') {
-    elSpk.textContent = b.speaker || '';
-    elSpk.style.color = b.color || '#aabbcc';
-    elTxt.className = 'txt';
-    elTxt.style.color = b.color || '#e8e8f0';
-    if (b.bg === 'nido') elTb.classList.add('nido-mode');
-    if (b.bg === 'nido') elFrame.classList.add('show');
+    if (b.bg === 'nido') { elTb.classList.add('nido-mode'); elFrame.classList.add('show'); }
     if (b.bg === 'duck') elDuck.classList.add('show');
-    elHint.classList.remove('show');
-    typeText(elTxt, b.text, 34, () => {
+    elSpk.textContent = b.speaker || '';
+    elSpk.style.color = b.color || '';
+    elSpk.classList.add('vis');
+    elTxt.style.color = b.color || '';
+    typeText(elTxt, b.text, 32, () => {
       setTimeout(() => elHint.classList.add('show'), 400);
       ready = true;
     });
@@ -594,7 +697,6 @@ function showBeat(b) {
 }
 
 function advance() {
-  // if still typing — skip to end
   if (typing) {
     clearTimeout(typTimer);
     typing = false;
@@ -609,76 +711,81 @@ function advance() {
   showBeat(B[cur]);
 }
 
-function goToFile() {
-  window.location.href = 'desktop.html';
-}
-function goBack() {
-  window.location.href = 'index.html';
-}
+function goToFile() { window.location.href = 'desktop.html'; }
+function goBack()   { window.location.href = 'index.html'; }
 
 document.body.addEventListener('click', advance);
 
-// start
+drawScene('black');
 showBeat(B[0]);
 
-// Audio (same engine as index.html)
+// ═══════════════════════════════
+//  AUDIO
+// ═══════════════════════════════
 const AC = window.AudioContext || window.webkitAudioContext;
-let ctx2 = null, mg2 = null;
+let actx = null;
+
 function makeRev(s) {
-  const len = Math.floor(ctx2.sampleRate * s);
-  const buf = ctx2.createBuffer(2, len, ctx2.sampleRate);
+  const len = Math.floor(actx.sampleRate * s);
+  const buf = actx.createBuffer(2, len, actx.sampleRate);
   for (let c = 0; c < 2; c++) {
     const d = buf.getChannelData(c);
     for (let i = 0; i < len; i++)
       d[i] = (Math.random()*2-1) * Math.pow(1-i/len, 2.3);
   }
-  const cv = ctx2.createConvolver(); cv.buffer = buf; return cv;
+  const cv2 = actx.createConvolver(); cv2.buffer = buf; return cv2;
 }
-function startAudio2() {
-  if (ctx2) return;
-  ctx2 = new AC();
-  mg2 = ctx2.createGain(); mg2.gain.value = 0;
-  const cp = ctx2.createDynamicsCompressor();
-  mg2.connect(cp); cp.connect(ctx2.destination);
-  mg2.gain.linearRampToValueAtTime(0.45, ctx2.currentTime + 6);
-  const rv = makeRev(9); const rg = ctx2.createGain();
-  rg.gain.value = .65; rv.connect(rg); rg.connect(mg2);
-  const dry = ctx2.createGain(); dry.gain.value = .1; dry.connect(mg2);
+
+function startAudio() {
+  if (actx) return;
+  actx = new AC();
+  const mg = actx.createGain(); mg.gain.value = 0;
+  const cp = actx.createDynamicsCompressor();
+  mg.connect(cp); cp.connect(actx.destination);
+  mg.gain.linearRampToValueAtTime(0.45, actx.currentTime + 6);
+
+  const rv = makeRev(9); const rg = actx.createGain();
+  rg.gain.value = .62; rv.connect(rg); rg.connect(mg);
+  const dry = actx.createGain(); dry.gain.value = .09; dry.connect(mg);
   const wire = n => { n.connect(rv); n.connect(dry); };
+
   const R = 41.2;
   [[R,.85,0],[R*1.009,.42,.003]].forEach(([f,a,wf]) => {
-    const o = ctx2.createOscillator(), g = ctx2.createGain();
+    const o=actx.createOscillator(), g=actx.createGain();
     o.type='sine'; o.frequency.value=f; g.gain.value=a;
-    if(wf){const w=ctx2.createOscillator(),wg=ctx2.createGain();
+    if(wf){const w=actx.createOscillator(),wg=actx.createGain();
       w.frequency.value=wf;wg.gain.value=f*.007;w.connect(wg);wg.connect(o.frequency);w.start();}
     o.connect(g); wire(g); o.start();
   });
+
   [R*2,R*2*1.189,R*2*1.498].forEach((f,i) => {
-    const o=ctx2.createOscillator(),g=ctx2.createGain();
+    const o=actx.createOscillator(),g=actx.createGain();
     o.type='triangle';o.frequency.value=f;g.gain.value=0;
-    const lfo=ctx2.createOscillator(),lg=ctx2.createGain();
+    const lfo=actx.createOscillator(),lg=actx.createGain();
     lfo.frequency.value=.04+i*.012;lg.gain.value=.05;
     lfo.connect(lg);lg.connect(g.gain);lfo.start();
     o.connect(g);wire(g);o.start();
-    g.gain.linearRampToValueAtTime(.05+i*.006, ctx2.currentTime+9+i*4);
+    g.gain.linearRampToValueAtTime(.05+i*.006, actx.currentTime+9+i*4);
   });
-  const nb=ctx2.createBuffer(1,ctx2.sampleRate*4,ctx2.sampleRate);
+
+  const nb=actx.createBuffer(1,actx.sampleRate*4,actx.sampleRate);
   const nd=nb.getChannelData(0);
   for(let i=0;i<nd.length;i++) nd[i]=Math.random()*2-1;
-  const ns=ctx2.createBufferSource(); ns.buffer=nb; ns.loop=true;
-  const lp=ctx2.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=160;
-  const hp=ctx2.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=52;
-  const ng=ctx2.createGain(); ng.gain.value=.15;
-  const sl=ctx2.createOscillator(),sg=ctx2.createGain();
+  const ns=actx.createBufferSource(); ns.buffer=nb; ns.loop=true;
+  const lp=actx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=160;
+  const hp=actx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=52;
+  const ng=actx.createGain(); ng.gain.value=.15;
+  const sl=actx.createOscillator(),sg=actx.createGain();
   sl.type='triangle';sl.frequency.value=.02;sg.gain.value=90;
   sl.connect(sg);sg.connect(lp.frequency);sl.start();
   ns.connect(hp);hp.connect(lp);lp.connect(ng);wire(ng);ns.start();
+
   function shim(){
-    if(!ctx2)return;
-    const o=ctx2.createOscillator(),g=ctx2.createGain();
+    if(!actx)return;
+    const o=actx.createOscillator(),g=actx.createGain();
     o.type='sine';o.frequency.value=R*(6+Math.random()*8);
     g.gain.value=0;o.connect(g);g.connect(rv);
-    const now=ctx2.currentTime,dur=3+Math.random()*8;
+    const now=actx.currentTime,dur=3+Math.random()*8;
     g.gain.linearRampToValueAtTime(.022+Math.random()*.025,now+2);
     g.gain.linearRampToValueAtTime(0,now+dur);
     o.start(now);o.stop(now+dur+.5);
@@ -686,14 +793,9 @@ function startAudio2() {
   }
   shim();
 }
-window.addEventListener('load', () => {
-  startAudio2();
-  if (ctx2 && ctx2.state==='suspended') ctx2.resume();
-});
-document.addEventListener('click', () => {
-  startAudio2();
-  if (ctx2 && ctx2.state!=='running') ctx2.resume();
-});
+
+window.addEventListener('load', () => { startAudio(); if(actx&&actx.state==='suspended')actx.resume(); });
+document.addEventListener('click', () => { startAudio(); if(actx&&actx.state!=='running')actx.resume(); });
 </script>
 </body>
 </html>
