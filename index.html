@@ -640,22 +640,33 @@ body::before { animation: bgpulse 18s ease-in-out infinite; }
 
 <script>
 // ═══════════════════════════════════════
-//  AUDIO ENGINE — dark ambient procedural
+//  AUDIO ENGINE v2 — layered dark ambient
 // ═══════════════════════════════════════
 const AC = window.AudioContext || window.webkitAudioContext;
 let ctx = null, masterGain = null, audioReady = false;
 
-function makeReverb() {
-  const len = Math.floor(ctx.sampleRate * 8);
+function makeReverb(sec) {
+  const len = Math.floor(ctx.sampleRate * sec);
   const buf = ctx.createBuffer(2, len, ctx.sampleRate);
   for (let c = 0; c < 2; c++) {
     const d = buf.getChannelData(c);
     for (let i = 0; i < len; i++)
-      d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.4);
+      d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.2);
   }
   const conv = ctx.createConvolver();
   conv.buffer = buf;
   return conv;
+}
+
+function makeDistort(amt) {
+  const ws = ctx.createWaveShaper();
+  const n = 256, curve = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const x = (i * 2) / n - 1;
+    curve[i] = ((Math.PI + amt) * x) / (Math.PI + amt * Math.abs(x));
+  }
+  ws.curve = curve; ws.oversample = '4x';
+  return ws;
 }
 
 function initAudio() {
@@ -663,90 +674,156 @@ function initAudio() {
   audioReady = true;
   ctx = new AC();
 
-  // master → compressor → out
   masterGain = ctx.createGain();
   masterGain.gain.value = 0;
   const comp = ctx.createDynamicsCompressor();
-  comp.threshold.value = -8; comp.ratio.value = 4;
+  comp.threshold.value = -10; comp.ratio.value = 4;
+  comp.attack.value = 0.01; comp.release.value = 0.5;
   masterGain.connect(comp);
   comp.connect(ctx.destination);
 
-  // slow fade-in (6 sec)
   const vol = (+(document.getElementById('mv')?.value ?? 70)) / 100 * 0.55;
-  masterGain.gain.linearRampToValueAtTime(vol, ctx.currentTime + 6);
+  masterGain.gain.linearRampToValueAtTime(vol, ctx.currentTime + 7);
 
-  // reverb bus
-  const rev = makeReverb();
-  const revG = ctx.createGain(); revG.gain.value = 0.7;
-  rev.connect(revG); revG.connect(masterGain);
-  // dry bus (barely audible without verb)
-  const dry = ctx.createGain(); dry.gain.value = 0.15;
-  dry.connect(masterGain);
-  function wire(n) { n.connect(dry); n.connect(rev); }
+  // два реверба: длинный (атмосфера) и короткий (удары)
+  const revL = makeReverb(9),  revLG = ctx.createGain();
+  const revS = makeReverb(2.5), revSG = ctx.createGain();
+  revLG.gain.value = 0.65; revSG.gain.value = 0.45;
+  revL.connect(revLG); revLG.connect(masterGain);
+  revS.connect(revSG); revSG.connect(masterGain);
+  const dry = ctx.createGain(); dry.gain.value = 0.12; dry.connect(masterGain);
+  const toL = n => { n.connect(revL); n.connect(dry); };
+  const toS = n => { n.connect(revS); n.connect(dry); };
 
-  const R = 41.2; // E1 — низкий корень
+  const R = 41.2; // E1
 
-  // — 3 суб-дрона со сдвигом (биения)
-  [[R, 0.9], [R * 1.009, 0.48], [R * 0.993, 0.42]].forEach(([f, a]) => {
+  // ── 1. Суб-дроны (2 слоя с биениями + питч-вобл) ──
+  [[R, 0.85, 0], [R * 1.009, 0.42, 0.003]].forEach(([f, a, wf]) => {
     const o = ctx.createOscillator(), g = ctx.createGain();
     o.type = 'sine'; o.frequency.value = f; g.gain.value = a;
-    o.connect(g); wire(g); o.start();
+    if (wf) {
+      const wLFO = ctx.createOscillator(), wG = ctx.createGain();
+      wLFO.frequency.value = wf; wG.gain.value = f * 0.007;
+      wLFO.connect(wG); wG.connect(o.frequency); wLFO.start();
+    }
+    o.connect(g); toL(g); o.start();
   });
 
-  // — квинта чуть ниже строя (тревога)
-  const o5 = ctx.createOscillator(), g5 = ctx.createGain();
-  o5.type = 'sine'; o5.frequency.value = R * 1.494;
-  g5.gain.value = 0.2; o5.connect(g5); wire(g5); o5.start();
+  // ── 2. Аккордовый пэд (свелл, разные фазы LFO) ──
+  // E фригийский: E, G, B, F (тритоновое напряжение)
+  [R*2, R*2*1.189, R*2*1.498, R*2*1.059].forEach((f, i) => {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'triangle'; o.frequency.value = f; g.gain.value = 0;
+    const lfo = ctx.createOscillator(), lg = ctx.createGain();
+    lfo.frequency.value = 0.038 + i * 0.013; lg.gain.value = 0.055;
+    lfo.connect(lg); lg.connect(g.gain); lfo.start();
+    o.connect(g); toL(g); o.start();
+    g.gain.linearRampToValueAtTime(0.055 + i * 0.008, ctx.currentTime + 9 + i * 4);
+  });
 
-  // — октава с медленным тремоло
-  const oOct = ctx.createOscillator(), gOct = ctx.createGain();
-  oOct.type = 'triangle'; oOct.frequency.value = R * 2; gOct.gain.value = 0.11;
-  const tLFO = ctx.createOscillator(), tG = ctx.createGain();
-  tLFO.frequency.value = 0.08; tG.gain.value = 0.07;
-  tLFO.connect(tG); tG.connect(gOct.gain); tLFO.start();
-  oOct.connect(gOct); wire(gOct); oOct.start();
+  // ── 3. Мелодическая линия (фригийская гамма, нота раз в 4-10 сек) ──
+  const scale = [82.4, 87.3, 98.0, 110.0, 123.5, 130.8, 73.4, 82.4, 65.4];
+  let ni = 0;
+  function playNote() {
+    if (!ctx || ctx.state === 'closed') return;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    const dist = makeDistort(6);
+    o.type = 'sine'; o.frequency.value = scale[ni++ % scale.length];
+    // вибрато
+    const vib = ctx.createOscillator(), vG = ctx.createGain();
+    vib.frequency.value = 3.2 + Math.random(); vG.gain.value = 0.12;
+    vib.connect(vG); vG.connect(o.frequency);
+    g.gain.value = 0;
+    o.connect(dist); dist.connect(g); g.connect(revL);
+    const now = ctx.currentTime, dur = 4.5 + Math.random() * 5;
+    g.gain.linearRampToValueAtTime(0.07, now + 1.8);
+    g.gain.setTargetAtTime(0, now + dur - 1.5, 1.0);
+    o.start(now); vib.start(now);
+    o.stop(now + dur + 1); vib.stop(now + dur + 1);
+    setTimeout(playNote, (3.5 + Math.random() * 7) * 1000);
+  }
+  setTimeout(playNote, 3500);
 
-  // — фильтрованный шум (lowpass с медленным свипом)
-  const nbuf = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate);
-  const nd = nbuf.getChannelData(0);
-  for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
-  const ns = ctx.createBufferSource(); ns.buffer = nbuf; ns.loop = true;
-  const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 165;
-  const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 52;
-  const nG = ctx.createGain(); nG.gain.value = 0.17;
-  const swLFO = ctx.createOscillator(), swG = ctx.createGain();
-  swLFO.frequency.value = 0.016; swG.gain.value = 95;
-  swLFO.connect(swG); swG.connect(lp.frequency); swLFO.start();
-  ns.connect(hp); hp.connect(lp); lp.connect(nG); wire(nG); ns.start();
+  // ── 4. Фильтрованный шум (двух диапазонов) ──
+  [{ fc: 130, hc: 50, gain: 0.15, sw: 80, swf: 0.022 },
+   { fc: 900, hc: 400, gain: 0.06, sw: 300, swf: 0.04 }].forEach(p => {
+    const nbuf = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate);
+    const nd = nbuf.getChannelData(0);
+    for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+    const ns = ctx.createBufferSource(); ns.buffer = nbuf; ns.loop = true;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = p.fc;
+    const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = p.hc;
+    const nG = ctx.createGain(); nG.gain.value = p.gain;
+    const swLFO = ctx.createOscillator(), swG = ctx.createGain();
+    swLFO.type = 'triangle'; swLFO.frequency.value = p.swf; swG.gain.value = p.sw;
+    swLFO.connect(swG); swG.connect(lp.frequency); swLFO.start();
+    ns.connect(hp); hp.connect(lp); lp.connect(nG); toL(nG); ns.start();
+  });
 
-  // — редкие высокие шиммеры (гармоники пропадают и появляются)
+  // ── 5. Сердцебиение (двойной удар, нерегулярно) ──
+  function heartbeat() {
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    [0, 0.17 + Math.random() * 0.12].forEach(off => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine'; o.frequency.value = 50 + Math.random() * 18;
+      g.gain.value = 0;
+      o.connect(g); g.connect(masterGain); g.connect(revS);
+      g.gain.setValueAtTime(0, now + off);
+      g.gain.linearRampToValueAtTime(0.14, now + off + 0.04);
+      g.gain.exponentialRampToValueAtTime(0.001, now + off + 0.5);
+      o.start(now + off); o.stop(now + off + 0.7);
+    });
+    setTimeout(heartbeat, (3.5 + Math.random() * 5.5) * 1000);
+  }
+  setTimeout(heartbeat, 5500);
+
+  // ── 6. Шиммеры (высокие гармоники) ──
   function shimmer() {
     if (!ctx) return;
     const o = ctx.createOscillator(), g = ctx.createGain();
-    o.type = 'sine';
-    o.frequency.value = R * (5 + Math.random() * 7);
-    g.gain.value = 0; o.connect(g); g.connect(rev);
-    const now = ctx.currentTime, dur = 3 + Math.random() * 8;
-    g.gain.linearRampToValueAtTime(0.03 + Math.random() * 0.03, now + 2.5);
+    o.type = 'sine'; o.frequency.value = R * (6 + Math.random() * 9);
+    g.gain.value = 0; o.connect(g); g.connect(revL);
+    const now = ctx.currentTime, dur = 3.5 + Math.random() * 8;
+    g.gain.linearRampToValueAtTime(0.022 + Math.random() * 0.028, now + 2);
     g.gain.linearRampToValueAtTime(0, now + dur);
     o.start(now); o.stop(now + dur + 0.5);
-    setTimeout(shimmer, (9 + Math.random() * 24) * 1000);
+    setTimeout(shimmer, (6 + Math.random() * 18) * 1000);
   }
   shimmer();
 
-  // — пульсы суббаса (глубокий удар раз в ~20сек)
+  // ── 7. Редкие тритоновые стабы (напряжение) ──
+  function stab() {
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    [R * 4, R * 4 * 1.414, R * 4 * 1.06].forEach(f => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      const filt = ctx.createBiquadFilter();
+      o.type = 'sawtooth'; o.frequency.value = f;
+      filt.type = 'lowpass'; filt.frequency.value = 700;
+      g.gain.value = 0;
+      o.connect(filt); filt.connect(g); g.connect(revL);
+      g.gain.linearRampToValueAtTime(0.038, now + 0.06);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
+      o.start(now); o.stop(now + 3.5);
+    });
+    setTimeout(stab, (28 + Math.random() * 50) * 1000);
+  }
+  setTimeout(stab, 22000);
+
+  // ── 8. Суббас-гул (раз в ~25 сек) ──
   function rumble() {
     if (!ctx) return;
     const o = ctx.createOscillator(), g = ctx.createGain();
-    o.type = 'sine'; o.frequency.value = 16 + Math.random() * 22;
+    o.type = 'sine'; o.frequency.value = 16 + Math.random() * 20;
     g.gain.value = 0; o.connect(g); g.connect(masterGain);
-    const now = ctx.currentTime, dur = 1.8 + Math.random() * 2.5;
-    g.gain.linearRampToValueAtTime(0.2, now + 0.9);
+    const now = ctx.currentTime, dur = 2 + Math.random() * 3;
+    g.gain.linearRampToValueAtTime(0.18, now + 1);
     g.gain.linearRampToValueAtTime(0, now + dur);
     o.start(now); o.stop(now + dur + 0.5);
-    setTimeout(rumble, (16 + Math.random() * 32) * 1000);
+    setTimeout(rumble, (18 + Math.random() * 35) * 1000);
   }
-  setTimeout(rumble, 11000);
+  setTimeout(rumble, 12000);
 }
 
 function setMusicVol(v) {
