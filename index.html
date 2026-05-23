@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NIDO</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Cormorant+SC:wght@300;400;500&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -130,15 +130,13 @@ body::after {
 .title-wrap { position: relative; margin-bottom: 28px; }
 
 .title {
-  font-family: 'Cormorant SC', serif;
-  font-weight: 300;
-  font-size: clamp(72px, 16vw, 116px);
-  letter-spacing: 22px;
+  font-size: clamp(52px, 12vw, 88px);
+  letter-spacing: 12px;
   color: var(--bright);
   text-shadow:
-    0 0 12px rgba(200,220,255,.6),
-    0 0 35px rgba(100,160,255,.35),
-    0 0 80px rgba(100,160,255,.18);
+    0 0 18px rgba(100,160,255,.9),
+    0 0 40px rgba(100,160,255,.5),
+    0 0 90px rgba(100,160,255,.25);
   animation: glitch 7s infinite, flicker 12s infinite 5s;
   position: relative;
   user-select: none;
@@ -208,12 +206,12 @@ body::after {
    SUBTITLE
 ════════════════════════════ */
 .subtitle {
-  font-family: 'Caveat', cursive;
-  font-weight: 400;
-  font-size: clamp(22px, 4.5vw, 30px);
+  font-family: 'VT323', monospace;
+  font-size: clamp(17px, 3.5vw, 24px);
   color: var(--dim);
-  letter-spacing: 1px;
+  letter-spacing: 3px;
   margin-bottom: 52px;
+  text-transform: lowercase;
   animation: sflic 13s infinite 2s;
 }
 @keyframes sflic {
@@ -418,32 +416,61 @@ input[type=range]::-webkit-slider-thumb {
     <div class="title">NIDO</div>
   </div>
 
-  <!-- DUCK — pixel art SVG -->
+  <!-- DUCK — pixel art SVG, worn yellow rubber duck -->
   <div class="duck-wrap">
-    <svg width="96" height="72" viewBox="0 0 12 9"
+    <svg width="112" height="96" viewBox="0 0 14 12"
          xmlns="http://www.w3.org/2000/svg"
          style="image-rendering:pixelated">
+      <!-- shadow -->
+      <rect x="2" y="11" width="9" height="1" fill="#000" opacity=".25"/>
       <!-- body -->
-      <rect x="2" y="4" width="7" height="4" fill="#b8c8d8"/>
-      <rect x="1" y="5" width="1" height="2" fill="#b8c8d8"/>
+      <rect x="2" y="5"  width="8" height="5" fill="#d4a800"/>
+      <rect x="1" y="6"  width="1" height="3" fill="#d4a800"/>
+      <rect x="10" y="6" width="1" height="2" fill="#d4a800"/>
+      <!-- body highlight -->
+      <rect x="3" y="5"  width="4" height="1" fill="#f0c830" opacity=".6"/>
+      <rect x="2" y="6"  width="1" height="2" fill="#f0c830" opacity=".4"/>
+      <!-- body shade -->
+      <rect x="2" y="9"  width="8" height="1" fill="#a07800" opacity=".7"/>
+      <rect x="9" y="7"  width="1" height="2" fill="#a07800" opacity=".5"/>
+      <!-- tail -->
+      <rect x="2" y="5"  width="1" height="3" fill="#b88a00"/>
+      <rect x="1" y="5"  width="1" height="1" fill="#b88a00"/>
+      <!-- neck -->
+      <rect x="8" y="3"  width="2" height="3" fill="#c9a000"/>
       <!-- head -->
-      <rect x="7" y="1" width="4" height="3" fill="#b8c8d8"/>
-      <rect x="8" y="0" width="2" height="1" fill="#b8c8d8"/>
-      <!-- eye — hollow, eerie -->
-      <rect x="10" y="1" width="1" height="1" fill="#0a0e1a"/>
-      <rect x="10" y="1" width="1" height="1" fill="#ff2244" opacity=".7"/>
+      <rect x="7" y="1"  width="5" height="4" fill="#d4a800"/>
+      <rect x="8" y="0"  width="3" height="1" fill="#d4a800"/>
+      <!-- head highlight -->
+      <rect x="8" y="1"  width="2" height="1" fill="#f0c830" opacity=".5"/>
+      <!-- eye socket — dark hollow -->
+      <rect x="10" y="1" width="2" height="2" fill="#1a0a00"/>
+      <!-- red eye glow -->
+      <rect x="10" y="1" width="2" height="2" fill="#cc1122" opacity=".8"/>
+      <rect x="11" y="1" width="1" height="1" fill="#ff3344" opacity=".6"/>
+      <!-- pupil / void -->
+      <rect x="10" y="2" width="1" height="1" fill="#000"/>
       <!-- beak -->
-      <rect x="11" y="2" width="1" height="1" fill="#c49020"/>
-      <!-- wing -->
-      <rect x="3" y="5" width="5" height="1" fill="#9ab0c0"/>
-      <!-- tail feather -->
-      <rect x="2" y="4" width="1" height="2" fill="#9ab0c0"/>
+      <rect x="12" y="2" width="2" height="2" fill="#c07000"/>
+      <rect x="12" y="3" width="2" height="1" fill="#904e00" opacity=".7"/>
+      <!-- beak highlight -->
+      <rect x="12" y="2" width="1" height="1" fill="#e08820" opacity=".5"/>
+      <!-- wing seam -->
+      <rect x="3" y="6"  width="6" height="1" fill="#b88a00" opacity=".6"/>
+      <!-- stitch marks (worn toy) -->
+      <rect x="4" y="7"  width="1" height="1" fill="#8a6600" opacity=".5"/>
+      <rect x="6" y="7"  width="1" height="1" fill="#8a6600" opacity=".5"/>
+      <rect x="8" y="7"  width="1" height="1" fill="#8a6600" opacity=".5"/>
+      <!-- crack / damage -->
+      <rect x="5" y="5"  width="1" height="3" fill="#ff2244" opacity=".18"/>
+      <rect x="6" y="6"  width="1" height="2" fill="#ff2244" opacity=".12"/>
+      <rect x="5" y="8"  width="2" height="1" fill="#ff2244" opacity=".10"/>
       <!-- feet -->
-      <rect x="4"  y="8" width="2" height="1" fill="#c49020"/>
-      <rect x="7"  y="8" width="2" height="1" fill="#c49020"/>
-      <!-- crack — unsettling detail -->
-      <rect x="5" y="5" width="1" height="2" fill="#ff2244" opacity=".2"/>
-      <rect x="5" y="6" width="2" height="1" fill="#ff2244" opacity=".15"/>
+      <rect x="4" y="10" width="3" height="1" fill="#c07000"/>
+      <rect x="3" y="10" width="1" height="1" fill="#a05800" opacity=".6"/>
+      <rect x="7" y="10" width="1" height="1" fill="#a05800" opacity=".6"/>
+      <rect x="7" y="10" width="3" height="1" fill="#c07000"/>
+      <rect x="10" y="10" width="1" height="1" fill="#a05800" opacity=".6"/>
     </svg>
   </div>
 
