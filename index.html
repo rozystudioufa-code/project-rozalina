@@ -208,15 +208,15 @@ body::after {
 .subtitle {
   font-family: 'VT323', monospace;
   font-size: clamp(17px, 3.5vw, 24px);
-  color: var(--dim);
+  color: #445566;
   letter-spacing: 3px;
   margin-bottom: 52px;
   text-transform: lowercase;
   animation: sflic 13s infinite 2s;
 }
 @keyframes sflic {
-  0%,80%,82%,100%{ opacity:.3; }
-  81%{ opacity:.08; }
+  0%,80%,82%,100%{ opacity:.13; }
+  81%{ opacity:.03; }
 }
 
 /* ════════════════════════════
@@ -490,11 +490,9 @@ input[type=range]:hover::-webkit-slider-thumb {
 
   <!-- DUCK — pixel art SVG, worn yellow rubber duck -->
   <div class="duck-wrap">
-    <svg width="112" height="96" viewBox="0 0 14 12"
+    <svg width="112" height="104" viewBox="0 0 14 13"
          xmlns="http://www.w3.org/2000/svg"
          style="image-rendering:pixelated">
-      <!-- shadow -->
-      <rect x="2" y="11" width="9" height="1" fill="#000" opacity=".25"/>
       <!-- body -->
       <rect x="2" y="5"  width="8" height="5" fill="#d4a800"/>
       <rect x="1" y="6"  width="1" height="3" fill="#d4a800"/>
@@ -515,21 +513,16 @@ input[type=range]:hover::-webkit-slider-thumb {
       <rect x="8" y="0"  width="3" height="1" fill="#d4a800"/>
       <!-- head highlight -->
       <rect x="8" y="1"  width="2" height="1" fill="#f0c830" opacity=".5"/>
-      <!-- eye socket — dark hollow -->
-      <rect x="10" y="1" width="2" height="2" fill="#1a0a00"/>
-      <!-- red eye glow -->
-      <rect x="10" y="1" width="2" height="2" fill="#cc1122" opacity=".8"/>
-      <rect x="11" y="1" width="1" height="1" fill="#ff3344" opacity=".6"/>
-      <!-- pupil / void -->
-      <rect x="10" y="2" width="1" height="1" fill="#000"/>
+      <!-- eye — black hollow with tiny reflection -->
+      <rect x="10" y="1" width="2" height="2" fill="#080a10"/>
+      <rect x="11" y="1" width="1" height="1" fill="#2a3050" opacity=".5"/>
       <!-- beak -->
       <rect x="12" y="2" width="2" height="2" fill="#c07000"/>
       <rect x="12" y="3" width="2" height="1" fill="#904e00" opacity=".7"/>
-      <!-- beak highlight -->
       <rect x="12" y="2" width="1" height="1" fill="#e08820" opacity=".5"/>
       <!-- wing seam -->
       <rect x="3" y="6"  width="6" height="1" fill="#b88a00" opacity=".6"/>
-      <!-- stitch marks (worn toy) -->
+      <!-- stitch marks -->
       <rect x="4" y="7"  width="1" height="1" fill="#8a6600" opacity=".5"/>
       <rect x="6" y="7"  width="1" height="1" fill="#8a6600" opacity=".5"/>
       <rect x="8" y="7"  width="1" height="1" fill="#8a6600" opacity=".5"/>
@@ -537,12 +530,21 @@ input[type=range]:hover::-webkit-slider-thumb {
       <rect x="5" y="5"  width="1" height="3" fill="#ff2244" opacity=".18"/>
       <rect x="6" y="6"  width="1" height="2" fill="#ff2244" opacity=".12"/>
       <rect x="5" y="8"  width="2" height="1" fill="#ff2244" opacity=".10"/>
-      <!-- feet -->
-      <rect x="4" y="10" width="3" height="1" fill="#c07000"/>
-      <rect x="3" y="10" width="1" height="1" fill="#a05800" opacity=".6"/>
-      <rect x="7" y="10" width="1" height="1" fill="#a05800" opacity=".6"/>
-      <rect x="7" y="10" width="3" height="1" fill="#c07000"/>
-      <rect x="10" y="10" width="1" height="1" fill="#a05800" opacity=".6"/>
+      <!-- left leg -->
+      <rect x="4" y="10" width="1" height="1" fill="#a07000"/>
+      <!-- left foot (spreads left, 3 toes) -->
+      <rect x="2" y="11" width="3" height="1" fill="#c07000"/>
+      <rect x="2" y="11" width="1" height="1" fill="#904e00" opacity=".6"/>
+      <rect x="4" y="11" width="1" height="1" fill="#904e00" opacity=".4"/>
+      <!-- right leg -->
+      <rect x="8" y="10" width="1" height="1" fill="#a07000"/>
+      <!-- right foot (spreads right, 3 toes) -->
+      <rect x="8" y="11" width="3" height="1" fill="#c07000"/>
+      <rect x="8" y="11" width="1" height="1" fill="#904e00" opacity=".4"/>
+      <rect x="10" y="11" width="1" height="1" fill="#904e00" opacity=".6"/>
+      <!-- shadow under feet -->
+      <rect x="2" y="12" width="3" height="1" fill="#000" opacity=".18"/>
+      <rect x="8" y="12" width="3" height="1" fill="#000" opacity=".18"/>
     </svg>
   </div>
 
